@@ -1,10 +1,10 @@
-import LogoIcon from "@/public/assets/logo.svg";
+import Icon from "@/app/_components/Icon";
 
 export default function MainFooter() {
   return (
     <div className="flex flex-1 flex-row h-40 py-9 max-w-[1200px] justify-between items-end">
       <div>
-        <LogoIcon className="fill-grayscale-9 w-28" />
+        <Icon type="logo" className="fill-grayscale-9 w-28" />
         <div className="flex flex-row mt-5">
           <p className="text-grayscale-8 text-sm cursor-pointer">이용약관</p>
           <p className="text-grayscale-8 text-sm mx-2">|</p>
