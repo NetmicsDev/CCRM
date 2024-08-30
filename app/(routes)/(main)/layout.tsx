@@ -11,7 +11,7 @@ export default function MainLayout({
       <nav className="fixed top-0 left-0 right-0">
         <MainNav />
       </nav>
-      <div className="pt-[72px]">{children}</div>
+      <section className="pt-[72px]">{children}</section>
       <footer className="flex justify-center">
         <MainFooter />
       </footer>

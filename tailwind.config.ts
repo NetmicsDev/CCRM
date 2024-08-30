@@ -14,6 +14,9 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
+    backgroundImage: {
+      "service-center": "url('/images/service-center.png')",
+    },
     colors: {
       main: {
         1: "#1E1E1E",
