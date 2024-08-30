@@ -21,8 +21,8 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.CCRM_DEPLOY_KEY }}
         with:
           source-directory: 'output'
-          destination-github-username: SnoopyDev
-          destination-repository-name: CCRM
+          destination-github-username: SnoopyKim
+          destination-repository-name: CCRM-deploy
           user-email: ${{ secrets.SNOOPY_EMAIL }}
           commit-message: ${{ github.event.commits[0].message }}
           target-branch: main
