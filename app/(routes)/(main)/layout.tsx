@@ -1,5 +1,5 @@
-import MainNav from "@/app/(routes)/(main)/_components/nav";
-import MainFooter from "./_components/footer";
+import MainNav from "@main/_components/nav";
+import MainFooter from "@main/_components/footer";
 
 export default function MainLayout({
   children,

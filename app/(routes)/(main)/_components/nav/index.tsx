@@ -2,8 +2,8 @@ import React from "react";
 import MainNavItem from "./nav-item";
 import Link from "next/link";
 import AuthButton from "./auth-button.";
-import { SecondaryLinkButton } from "@/app/_components/Button";
-import Icon from "@/app/_components/Icon";
+import { SecondaryLinkButton } from "@components/Button";
+import Icon from "@components/Icon";
 
 export default function MainNav() {
   return (

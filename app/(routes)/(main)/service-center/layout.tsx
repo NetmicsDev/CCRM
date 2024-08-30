@@ -1,4 +1,4 @@
-import MainNavItem from "../_components/nav/nav-item";
+import MainNavItem from "@main/_components/nav/nav-item";
 
 export default function ServiceCenterLayout({
   children,
