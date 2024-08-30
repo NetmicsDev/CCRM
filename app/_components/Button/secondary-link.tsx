@@ -5,13 +5,13 @@ export default function SecondaryLinkButton({
   link,
   text,
   width = -1,
-  fontSize = 16,
+  fontSize = "text-base",
   disabled = false,
 }: {
   link: string;
   text: string;
   width?: number;
-  fontSize?: number;
+  fontSize?: "text-base" | "text-sm" | "text-lg";
   disabled?: boolean;
 }) {
   return (
