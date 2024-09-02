@@ -14,7 +14,7 @@ export default function MainNav() {
         </Link>
         <div className="flex flex-row flex-1 h-full px-2">
           <MainNavItem href="/b2b">B2B제휴</MainNavItem>
-          <MainNavItem href="/my-page/purchase" selectable={false}>
+          <MainNavItem href="/my-page/purchase" plain>
             제품 구매하기
           </MainNavItem>
           <MainNavItem href="/service-center">고객센터</MainNavItem>
@@ -25,7 +25,7 @@ export default function MainNav() {
           <SecondaryLinkButton
             link="/program"
             text="프로그램 시작하기"
-            fontSize={14}
+            fontSize={"text-sm"}
           />
         </div>
       </div>

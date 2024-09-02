@@ -44,6 +44,7 @@ const config: Config = {
         13: "#F4F4F4",
         14: "#FFFFFF",
       },
+      transparent: "transparent",
     },
   },
   plugins: [],

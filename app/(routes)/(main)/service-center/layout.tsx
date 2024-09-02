@@ -15,17 +15,17 @@ export default function ServiceCenterLayout({
           </div>
         </header>
         <nav className="flex flex-row h-14">
-          <MainNavItem href="/service-center/notice" width={"w-[200px]"}>
+          <MainNavItem href="/service-center/notice" width={200} underline>
             공지사항
           </MainNavItem>
-          <MainNavItem href="/service-center/faq" width={"w-[200px]"}>
+          <MainNavItem href="/service-center/faq" width={200} underline>
             FAQ
           </MainNavItem>
-          <MainNavItem href="/service-center/inquiry" width={"w-[200px]"}>
+          <MainNavItem href="/service-center/inquiry" width={200} underline>
             1:1 문의
           </MainNavItem>
         </nav>
-        <div className="flex-1">{children}</div>
+        {children}
       </main>
     </div>
   );
