@@ -9,6 +9,9 @@ const config: Config = {
   safelist: ["w-[100px]", "w-[200px]"],
   theme: {
     extend: {
+      fontFamily: {
+        pretendard: ["var(--font-pretendard)", "system-ui"],
+      },
       backgroundImage: {
         "service-center": "url('/images/service-center.png')",
       },
