@@ -12,7 +12,7 @@ export default function MainLayout({
         <MainNav />
       </nav>
       <section className="pt-[72px]">{children}</section>
-      <footer className="flex justify-center">
+      <footer className="flex justify-center mt-20">
         <MainFooter />
       </footer>
     </>
