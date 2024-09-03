@@ -27,8 +27,7 @@ export default function MainNav() {
             text="프로그램 시작하기"
             color="secondary"
             height="small"
-            fontSize="text-sm"
-            weight="font-semibold"
+            className="font-semibold text-sm"
           />
         </div>
       </div>

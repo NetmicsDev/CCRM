@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 
-export default function GoogleSignIn() {
+export default function GoogleSignUp() {
   const onGoogleSignIn = () => {
-    alert("구글 로그인");
+    alert("구글 회원가입");
   };
 
   return (
@@ -18,7 +18,7 @@ export default function GoogleSignIn() {
         width={20}
         height={20}
       />
-      <span className="ml-2 font-medium">구글로 로그인</span>
+      <span className="ml-2 font-medium">구글로 회원가입</span>
     </div>
   );
 }

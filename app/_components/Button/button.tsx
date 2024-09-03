@@ -23,6 +23,7 @@ export default function PrimaryButton({
   color = "primary",
   fontSize = "text-base",
   weight = "font-normal",
+  disabled,
   className,
   ...props
 }: PrimaryButtonProps) {
