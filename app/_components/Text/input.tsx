@@ -15,6 +15,7 @@ export default function Input({
   onChange,
   onEnter,
   disabled,
+  className,
   ...props
 }: InputProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -33,7 +34,8 @@ export default function Input({
       className={clsx(
         "block flex-1 h-14 p-4 pr-10 text-base bg-white border border-grayscale-11 rounded-sm placeholder-grayscale-6",
         "focus:border-sub-2 focus-visible:border-sub-2 focus:outline-none",
-        "disabled:text-grayscale-9 disabled:bg-grayscale-13 disabled:border-none"
+        "disabled:text-grayscale-9 disabled:bg-grayscale-13 disabled:border-none",
+        className
       )}
       placeholder={placeholder}
       onChange={onChange}

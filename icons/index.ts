@@ -20,3 +20,4 @@ export { default as right } from "./small-right.svg";
 export { default as plus } from "./plus.svg";
 export { default as minus } from "./minus.svg";
 export { default as down } from "./down.svg";
+export { default as checkbox } from "./checkbox.svg";

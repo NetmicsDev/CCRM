@@ -6,7 +6,6 @@ import React from "react";
 
 export interface PrimaryButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  width?: number;
   height?: "small" | "medium" | "large";
   color?: "primary" | "secondary" | "tertiary";
   fontSize?: "text-base" | "text-sm" | "text-lg";
@@ -20,11 +19,11 @@ export interface PrimaryButtonProps
 
 export default function PrimaryButton({
   onClick,
-  width = -1,
   height = "medium",
   color = "primary",
   fontSize = "text-base",
   weight = "font-normal",
+  className,
   ...props
 }: PrimaryButtonProps) {
   return (
@@ -36,9 +35,7 @@ export default function PrimaryButton({
         buttonStyles.height[height],
         buttonStyles.color[color],
         "disabled:bg-grayscale-7 disabled:pointer-events-none",
-        {
-          [`w-[${width}px]`]: width !== -1,
-        }
+        className
       )}
       onClick={onClick}
       {...props}
