@@ -19,6 +19,7 @@ export default function SignUpPage() {
         <span className=" text-grayscale-6">이미 회원이신가요?</span>
         <Link
           href="/sign-in"
+          replace
           className="ml-2  text-grayscale-6 underline underline-offset-2"
         >
           로그인

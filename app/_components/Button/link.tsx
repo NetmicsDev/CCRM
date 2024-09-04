@@ -12,17 +12,17 @@ export interface LinkButtonProps extends LinkProps {
 
 export default function LinkButton({
   href,
-  as,
   title,
   height = "medium",
   color = "primary",
   disabled = false,
+  replace = false,
   className,
 }: LinkButtonProps) {
   return (
     <Link
       href={href}
-      as={as}
+      replace={replace}
       className={clsx(
         "flex justify-center items-center rounded-sm text-grayscale-14 px-4 py-2 text-base font-normal",
         buttonStyles.height[height],

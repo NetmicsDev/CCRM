@@ -33,13 +33,13 @@ export default function FAQPage({
         </div>
       </div>
       <div className="my-10">
-        <div className="flex flex-row h-[68px] gap-2">
+        <div className="flex flex-row gap-2">
           {categories.map((category) => (
             <Link
               key={category.value}
               href={`/service-center/faq?category=${category.value}`}
               className={clsx(
-                "px-12 py-5 text-xl rounded-xl",
+                "px-6 py-3 text-lg rounded-xl",
                 currentCategory === category.value
                   ? "bg-main-2 text-grayscale-14"
                   : "text-grayscale-6 border border-grayscale-8"

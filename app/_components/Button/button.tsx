@@ -18,6 +18,7 @@ export interface PrimaryButtonProps
 }
 
 export default function PrimaryButton({
+  type = "button",
   onClick,
   height = "medium",
   color = "primary",
@@ -29,6 +30,7 @@ export default function PrimaryButton({
 }: PrimaryButtonProps) {
   return (
     <button
+      type={type}
       className={clsx(
         "rounded-sm text-grayscale-14  px-4 py-2",
         fontSize,
@@ -41,7 +43,7 @@ export default function PrimaryButton({
       onClick={onClick}
       {...props}
     >
-      {props.children}
+      {props.title}
     </button>
   );
 }

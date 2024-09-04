@@ -1,7 +1,8 @@
 "use client";
 
-import { LinkButton } from "@/app/_components/Button";
+import { Button, LinkButton } from "@/app/_components/Button";
 import { CheckBox } from "@/app/_components/CheckBox";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function SignUpTermPage() {
@@ -38,6 +39,7 @@ export default function SignUpTermPage() {
       <LinkButton
         href="/sign-up/form?terms=true&privacy=true"
         as="/sign-up/form"
+        replace
         title="회원가입하기"
         disabled={!termsChecked || !privacyChecked}
         className="w-[400px] mt-10 shadow-md shadow-grayscale-9"
