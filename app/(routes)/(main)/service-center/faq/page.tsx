@@ -3,9 +3,7 @@
 import { SearchField } from "@/app/_components/Text";
 import Link from "next/link";
 import Pagination from "../_components/pagination";
-import { LinkButton } from "@/app/_components/Button";
 import clsx from "clsx";
-import Icon from "@/app/_components/Icon";
 import { useState } from "react";
 import AccordianItem from "./_components/accordian";
 

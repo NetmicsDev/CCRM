@@ -9,8 +9,8 @@ export default function SignUpPage() {
       <Icon type="logo" className="w-48 fill-main-1" />
       <div className="flex flex-col w-[400px] mt-16 items-stretch gap-2">
         <LinkButton
-          link="/sign-up/terms"
-          text="이메일 회원가입"
+          href="/sign-up/terms"
+          title="이메일 회원가입"
           className="w-full"
         />
         <GoogleSignUp />
