@@ -15,7 +15,7 @@ export default function TextField({
   ...props
 }: TextFieldProps) {
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 gap-2">
       {label && <TextLabel htmlFor={id} title={label} caution={caution} />}
       <div className="flex relative">
         <Input id={id} type={type} placeholder={placeholder} {...props} />

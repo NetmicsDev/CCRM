@@ -11,7 +11,7 @@ export default function TextLabel({
     <div className="flex gap-2">
       <label
         htmlFor={htmlFor}
-        className="inline-block text-sm font-semibold mb-2 text-grayscale-6"
+        className="inline-block text-sm font-semibold text-grayscale-6"
       >
         {title}
       </label>
