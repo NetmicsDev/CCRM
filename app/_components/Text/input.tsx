@@ -10,7 +10,6 @@ export interface InputProps
 export default function Input({
   id,
   type = "text",
-  value,
   placeholder,
   onChange,
   onEnter,
@@ -30,7 +29,7 @@ export default function Input({
       id={id}
       name={id}
       type={type}
-      value={value}
+      defaultValue={props.defaultValue}
       className={clsx(
         "block flex-1 h-14 p-4 pr-10 text-base bg-white border border-grayscale-11 rounded-sm placeholder-grayscale-6",
         "focus:border-sub-2 focus-visible:border-sub-2 focus:outline-none",
