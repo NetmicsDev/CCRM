@@ -2,7 +2,7 @@
 
 import { SearchField } from "@/app/_components/Text";
 import Link from "next/link";
-import Pagination from "../_components/pagination";
+import Pagination from "@components/Pagination";
 import clsx from "clsx";
 import { useState } from "react";
 import AccordianItem from "./_components/accordian";
