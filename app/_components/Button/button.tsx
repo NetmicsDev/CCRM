@@ -11,7 +11,6 @@ export interface PrimaryButtonProps
 
 export default function PrimaryButton({
   type = "button",
-  onClick,
   color = "primary",
   disabled,
   className,
@@ -26,7 +25,6 @@ export default function PrimaryButton({
         "disabled:bg-grayscale-7 disabled:pointer-events-none",
         className
       )}
-      onClick={onClick}
       {...props}
     >
       {props.title}
