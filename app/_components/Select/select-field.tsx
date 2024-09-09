@@ -1,27 +1,26 @@
-import clsx from "clsx";
+import cn from "@utils/cn";
 import Icon from "../Icon";
-import Select from "./select";
-
-export interface SelectProps extends React.ComponentPropsWithoutRef<"select"> {
-  label?: string;
-  placeholder?: string;
-  options: {
-    value: string;
-    text: string;
-  }[];
-}
+import Select, { SelectProps } from "./select";
+import TextLabel, { LabelProps } from "../Text/label";
 
 const SelectField = ({
-  label,
-  placeholder,
+  title,
+  caution,
+  cautionClassName,
   options,
   defaultValue,
-  className,
   ...props
-}: SelectProps) => {
+}: SelectProps & LabelProps) => {
   return (
-    <div className="flex flex-col">
-      {label && <label className="font-semibold mb-2">{label}</label>}
+    <div className="flex flex-col gap-2">
+      {title && (
+        <TextLabel
+          htmlFor={props.id}
+          title={title}
+          caution={caution}
+          cautionClassName={cautionClassName}
+        />
+      )}
       <Select options={options} defaultValue={defaultValue} {...props} />
     </div>
   );

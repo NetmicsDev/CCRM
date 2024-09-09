@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import cn from "@utils/cn";
 
 import * as icons from "@/icons";
 
@@ -24,7 +24,7 @@ export default function Icon({
   return (
     <span onClick={onClick}>
       <IconComponent
-        className={clsx("flex-shrink-0 fill-current", className, {
+        className={cn("flex-shrink-0 fill-current", className, {
           "w-6 h-6": !hasWidth, // Default size
         })}
       />

@@ -3,7 +3,7 @@
 import { SearchField } from "@/app/_components/Text";
 import Link from "next/link";
 import Pagination from "@components/Pagination";
-import clsx from "clsx";
+import cn from "@utils/cn";
 import { useState } from "react";
 import AccordianItem from "./_components/accordian";
 
@@ -38,7 +38,7 @@ export default function FAQPage({
             <Link
               key={category.value}
               href={`/service-center/faq?category=${category.value}`}
-              className={clsx(
+              className={cn(
                 "px-6 py-3 text-lg rounded-xl",
                 currentCategory === category.value
                   ? "bg-main-2 text-grayscale-14"

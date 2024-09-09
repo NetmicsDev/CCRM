@@ -2,7 +2,7 @@
 
 import Icon from "@/app/_components/Icon";
 import { SearchField } from "@/app/_components/Text";
-import clsx from "clsx";
+import cn from "@utils/cn";
 import React, { useState } from "react";
 import Link from "next/link";
 import { CategoryBadge } from "@/app/_components/Badge";

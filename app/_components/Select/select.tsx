@@ -1,13 +1,13 @@
 "use client";
 
-import clsx from "clsx";
+import cn from "@utils/cn";
 import Icon from "../Icon";
+import clsx from "clsx";
 
 export interface SelectProps extends React.ComponentPropsWithoutRef<"select"> {
-  label?: string;
   placeholder?: string;
   options: {
-    value: string;
+    value: any;
     text: string;
   }[];
 }
@@ -17,29 +17,29 @@ const Select = ({
   options,
   defaultValue,
   className,
-  name,
+  id,
   ...props
 }: SelectProps) => {
   const onClickIcon = () => {
-    console.log(name, document.getElementById(name ?? ""));
-    name &&
-      (document.getElementById(name) as HTMLSelectElement | null)?.showPicker();
+    id &&
+      (document.getElementById(id) as HTMLSelectElement | null)?.showPicker();
   };
   return (
     <div className="flex flex-col relative">
       <select
-        id={name}
-        name={name}
+        id={id}
+        name={id}
         defaultValue={placeholder}
-        className={clsx(
-          "appearance-none h-14 p-4 border border-1 border-grayscale-11 rounded-sm outline-none",
+        className={cn(
+          "appearance-none h-14 p-4 border border-grayscale-11 rounded-sm outline-none",
           // "focus:border-sub-2 focus-visible:border-sub-2",
           "disabled:text-grayscale-9 disabled:bg-grayscale-13 disabled:border-none",
           className
         )}
         {...props}
       >
-        <option disabled>{placeholder ?? ""}</option>
+        {placeholder && <option disabled>{placeholder}</option>}
+
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.text}
