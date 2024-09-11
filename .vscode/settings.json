@@ -8,5 +8,6 @@
     "_types": "Typescript",
     "_utils": "Utils",
     "(routes)": "Routes"
-  }
+  },
+  "svg.preview.background": "dark-transparent"
 }
