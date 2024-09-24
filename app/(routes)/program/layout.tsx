@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex space-x-2">
               <button className="bg-blue-900 text-white px-4 py-2 rounded flex items-center">
                 <Image
-                  src="/images/program/google-icon.png"
+                  src="/images/google.png"
                   alt="Google"
                   width={16}
                   height={16}
@@ -20,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </button>
               <button className="bg-blue-900 text-white px-4 py-2 rounded flex items-center">
                 <Image
-                  src="/images/program/google-icon.png"
+                  src="/images/google.png"
                   alt="Google"
                   width={16}
                   height={16}
