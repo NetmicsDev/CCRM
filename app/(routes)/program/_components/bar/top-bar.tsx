@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function TopBar({ children }: { children: React.ReactNode }) {
+export default function TopBar() {
   return (
     <div className="flex-col w-full">
       <nav className="bg-white border-b border-grayscale-11 p-4">
@@ -37,7 +37,6 @@ export default function TopBar({ children }: { children: React.ReactNode }) {
           </button>
         </div>
       </nav>
-      <div className="flex flex-1 w-full">{children}</div>
     </div>
   );
 }
