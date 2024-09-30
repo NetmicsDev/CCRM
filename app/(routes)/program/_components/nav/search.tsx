@@ -1,7 +1,6 @@
 "use client";
 
 import { SearchField } from "@/app/_components/Text";
-import Image from "next/image";
 
 export default function ProgramSearchBar() {
   return (
@@ -14,13 +13,13 @@ export default function ProgramSearchBar() {
   );
 }
 
-export function ProgramMainSearchBar() {
-  return (
-    <SearchField
-      onSearch={() => {}}
-      className="border border-gray-300 rectangle-lg p-4"
-      placeholder="검색"
-      iconClassName="fill-grayscale-10 group-focus-within:fill-grayscale-10"
-    />
-  );
-}
+// export function ProgramMainSearchBar() {
+//   return (
+//     <SearchField
+//       onSearch={() => {navigate('')}}
+//       className="border border-gray-300 rectangle-lg p-4"
+//       placeholder="검색"
+//       iconClassName="fill-grayscale-10 group-focus-within:fill-grayscale-10"
+//     />
+//   );
+// }

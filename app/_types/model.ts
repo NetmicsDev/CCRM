@@ -4,3 +4,11 @@ export type ProgramSearchResult = {
     date: string,
     imageUrl: string;
 }
+
+export type ProgramEducationVideo = {
+    title: string,
+    category: string,
+    author: string,
+    thumbnailUrl: string
+    videoUrl: string;
+}

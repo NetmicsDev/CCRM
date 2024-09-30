@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ProgramNav />
       <div className="flex flex-col w-full justify-between">
         <TopBar />
-        <div className="flex flex-1 w-full">{children}</div>
+        <div className="flex flex-1 w-full mx-10 p-10">{children}</div>
         <BottomBar />
       </div>
     </div>

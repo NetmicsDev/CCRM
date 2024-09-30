@@ -23,37 +23,35 @@ export default function ProgramPage() {
 
   return (
     <div className="w-full justify-start">
-      <div className="mx-20 p-6">
-        {/* 검색바 */}
-        <div className="max-w-xl">
-          <ProgramMainSearchBar />
-        </div>
-        {/* 인기 검색어 */}
-        <div className="mb-6 flex">
-          <span className="flex space-x-2 mr-2 mt-2 font-bold text-main-1">
-            인기검색어
-          </span>
-          <div className="mt-2 flex space-x-2 text-main-5 font-semibold">
-            {searchRecommendList.map((element, index) => (
-              <a
-                key={element}
-                href="#"
-                className="hover:underline"
-              >
-                #{element}
-              </a>
-            ))}
-          </div>
-        </div>
-        {/* 통합 검색결과 */}
-        <div className="bg-white">
-          <h2 className="text-2xl font-bold mb-4">통합 검색결과</h2>
-          <div className="text-lg text-gray-600 pb-2 border-b border-grayscale-11">
-            고객 <span className="text-sub-1">{searchResults.length}건</span>
-          </div>
-        </div>
-        <SearchItem results={searchResults} />
+      {/* 검색바 */}
+      <div className="max-w-xl">
+        <ProgramMainSearchBar />
       </div>
+      {/* 인기 검색어 */}
+      <div className="mb-6 flex">
+        <span className="flex space-x-2 mr-2 mt-2 font-bold text-main-1">
+          인기검색어
+        </span>
+        <div className="mt-2 flex space-x-2 text-main-5 font-semibold">
+          {searchRecommendList.map((element, index) => (
+            <a
+              key={element}
+              href="#"
+              className="hover:underline"
+            >
+              #{element}
+            </a>
+          ))}
+        </div>
+      </div>
+      {/* 통합 검색결과 */}
+      <div className="bg-white">
+        <h2 className="text-2xl font-bold mb-4">통합 검색결과</h2>
+        <div className="text-lg text-gray-600 pb-2 border-b border-grayscale-11">
+          고객 <span className="text-sub-1">{searchResults.length}건</span>
+        </div>
+      </div>
+      <SearchItem results={searchResults} />
     </div>
   );
 }
