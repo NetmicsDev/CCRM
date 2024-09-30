@@ -1,10 +1,19 @@
 "use client";
 
+import { apiRequest } from "@/app/_utils/axios/client";
 import Image from "next/image";
-
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 export default function GoogleSignIn() {
-  const onGoogleSignIn = () => {
-    alert("구글 로그인");
+  const router = useRouter();
+  const onGoogleSignIn = async () => {
+    const { data } = await apiRequest("/auth/google", { method: "GET" });
+
+    Cookies.set("ccrm-token", "ccrm-token", {
+      expires: 30,
+    });
+
+    window.location.href = "/";
   };
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 import { SimpleError } from "@/app/_types/error";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import Cookies from "js-cookie"; // 클라이언트에서 쿠키를 읽기 위한 js-cookie
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -55,35 +55,38 @@ axiosClient.interceptors.response.use(
 );
 
 // 공통 처리 함수: 요청을 보낸 후 성공 및 실패 처리
-export const handleRequest = async (
-  promise: Promise<AxiosResponse>
-): Promise<{ data?: any; error?: SimpleError }> => {
-  let data, error;
+export const apiRequest = async <T>(
+  url: string,
+  config?: AxiosRequestConfig
+): Promise<{ data?: T; error?: AxiosError }> => {
+  let response;
+  let error;
+  let authenticated = true;
   try {
-    const response = await promise;
-    data = response.data; // 성공 시 데이터 반환
-  } catch (_error: any) {
-    // 에러 처리: SimpleError 타입으로 변환
+    response = await axiosClient(url, config);
+  } catch (_error) {
     if (axios.isAxiosError(_error)) {
-      error = {
-        type: "axios",
-        message: _error.response?.data?.message,
-      };
-    } else if (_error.type === "unauthorized") {
+      // Axios 에러 처리
+      console.error("API Error:", _error.response?.data || _error.message);
+
+      if (_error.response?.status === 401) {
+        authenticated = true;
+      }
+
       error = _error;
     } else {
-      error = {
-        type: "unknown",
-        message: _error instanceof Error ? _error.message : "unknown error",
-      };
+      // 기타 에러 처리
+      error = new AxiosError("알 수 없는 오류가 발생했습니다.");
     }
   } finally {
-    if (error && error.type === "unauthorized") {
-      redirect("/sign-in");
+    if (!authenticated) {
+      window.location.href = "/sign-in";
     }
+    return {
+      data: response?.data,
+      error,
+    };
   }
-
-  return { data, error };
 };
 
 export default axiosClient;

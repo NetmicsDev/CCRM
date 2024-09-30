@@ -9,16 +9,24 @@ import {
   getRememberedUserEmail,
   rememberUserEmail,
 } from "@/app/_utils/localstorage";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
+import Cookies from "js-cookie";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [initialEmail, setInitialEmail] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const token = Cookies.get("ccrm-token");
+    if (token) {
+      router.replace("/program");
+    }
+
     setInitialEmail(getRememberedUserEmail());
-  }, [setInitialEmail]);
+  }, [router]);
 
   const handleSignIn = async (formData: FormData) => {
     const email = formData.get("email")?.toString() ?? "";
@@ -31,15 +39,19 @@ export default function LoginForm() {
       deleteRememberedUserEmail();
     }
 
-    const result = await signIn(email, password);
-    if (result?.error) {
-      setError(result.error.message);
-    } else {
-      redirect("/program");
+    flushSync(() => setError(""));
+
+    const { data, error } = await signIn(email, password);
+    if (error) {
+      setError(
+        (error.response?.data as { message: string }).message || error.message
+      );
+    }
+    if (data) {
+      window.location.href = "/program";
     }
   };
 
-  console.log("LoginForm", initialEmail !== "");
   return (
     <form className="w-full" action={handleSignIn}>
       <Input
@@ -68,7 +80,7 @@ export default function LoginForm() {
         <CheckBox
           name={"store-email"}
           label="아이디 저장"
-          defaultChecked={initialEmail === "" ? undefined : true}
+          defaultChecked={initialEmail !== ""}
         />
         {/* <CheckBox name={"store-pw"} label="비밀번호 저장" /> */}
       </div>
