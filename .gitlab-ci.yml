@@ -1,0 +1,44 @@
+stages:
+    - build
+    #    - test
+    - deploy
+
+variables:
+    IMAGE_NAME: "ccrm-user"
+    IMAGE_VERSION: "0.1.0"
+    DOCKER_HOST: tcp://172.17.0.1:2375
+    SERVICE_NAME: "ccrm-user"
+    VOLUME_NAME: "ccrm_user_data"
+
+before_script:
+    - echo "Starting CI/CD pipeline"
+
+# Step 1: Build Docker Image
+build:
+    stage: build
+    script:
+        - docker build -t $IMAGE_NAME .
+    only:
+        - main
+
+# Step 2: Deploy (e.g., push to Docker Hub or deploy to server)
+deploy:
+    stage: deploy
+    script:
+        - docker tag $IMAGE_NAME $IMAGE_NAME:$IMAGE_VERSION
+
+        - docker stop $SERVICE_NAME || true
+        - docker rm $SERVICE_NAME || true
+
+        - docker run -d --name $SERVICE_NAME -p --network docker-compose_default --mount source=$VOLUME_NAME,target=/app $IMAGE_NAME:$IMAGE_VERSION
+    only:
+        - main
+
+# Step 3: Cleanup old Docker images
+cleanup:
+    stage: cleanup
+    script:
+        # 사용되지 않는 Docker 이미지 정리
+        - docker image prune -a -f --filter "until=24h" # 24시간 이상 사용되지 않은 이미지를 삭제
+    only:
+        - main
