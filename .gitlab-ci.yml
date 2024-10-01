@@ -31,7 +31,7 @@ deploy:
         - docker stop $SERVICE_NAME || true
         - docker rm $SERVICE_NAME || true
 
-        - docker run -d --name $SERVICE_NAME -p --network docker-compose_default --mount source=$VOLUME_NAME,target=/app $IMAGE_NAME:$IMAGE_VERSION
+        - docker run -d --name $SERVICE_NAME --network docker-compose_default --mount source=$VOLUME_NAME,target=/app $IMAGE_NAME:$IMAGE_VERSION
     only:
         - main
 
