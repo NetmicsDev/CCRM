@@ -7,9 +7,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen">
       <ProgramNav />
       <div className="flex flex-col w-full justify-between">
-        <TopBar />
+        <div className="sticky top-0 z-10">
+          <TopBar />
+        </div>
         <div className="flex flex-1 w-full mx-10 p-10">{children}</div>
-        <BottomBar />
+        <div className="sticky bottom-0 z-10">
+          <BottomBar />
+        </div>
       </div>
     </div>
   );

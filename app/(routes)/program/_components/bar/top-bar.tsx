@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function TopBar() {
   return (
-    <div className="flex-col w-full">
+    <div className="flex-col w-full bg-grayscale-14">
       <nav className="bg-white border-b border-grayscale-11 p-4">
         <div className="mx-auto flex items-center justify-between">
           <div className="flex space-x-2">
