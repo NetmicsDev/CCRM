@@ -2,6 +2,7 @@ stages:
     - build
     #    - test
     - deploy
+    - .post
 
 variables:
     IMAGE_NAME: "ccrm-user"
@@ -36,7 +37,7 @@ deploy:
 
 # Step 3: Cleanup old Docker images
 cleanup:
-    stage: cleanup
+    stage: .post
     script:
         # 사용되지 않는 Docker 이미지 정리
         - docker image prune -a -f --filter "until=24h" # 24시간 이상 사용되지 않은 이미지를 삭제
