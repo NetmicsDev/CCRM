@@ -58,7 +58,7 @@ export default function LoginForm() {
         type="email"
         name="email"
         placeholder="이메일 아이디"
-        className="w-full mt-16"
+        className="w-full mt-2"
         defaultValue={initialEmail}
         required
       />

@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 
 // Axios 인스턴스 생성
 const axiosClient = axios.create({
-  baseURL: `http://${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/api`, // 기본 API URL 설정
+  baseURL: `https://${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/api`, // 기본 API URL 설정
   timeout: 10000, // 10초 타임아웃 설정
   headers: {
     "Content-Type": "application/json",

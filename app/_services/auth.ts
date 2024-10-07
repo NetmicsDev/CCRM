@@ -24,19 +24,19 @@ export async function signIn(username: string, password: string) {
 }
 
 export async function signUp(register: RegisterModel) {
+  const googleToken = Cookies.get("ccrm-temp-token");
+  const endpoint = googleToken ? "/auth/google/signup" : "/auth/signup";
+  const requestData = googleToken
+    ? { ...register.toJson(), refreshToken: googleToken }
+    : register.toJson();
+
   const { data, error } = await apiRequest<{
     jwtToken: string;
     message: string;
-  }>("/auth/signup", {
+  }>(endpoint, {
     method: "POST",
-    data: register.toJson(),
+    data: requestData,
   });
-
-  if (data) {
-    Cookies.set("ccrm-token", data.jwtToken, {
-      expires: 30,
-    });
-  }
 
   return { data, error };
 }

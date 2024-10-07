@@ -6,6 +6,7 @@ import { Button } from "@/app/_components/Button";
 import { useRouter } from "next/navigation";
 import RegisterModel from "@/app/_models/register";
 import { signUp } from "@/app/_services/auth";
+import Cookies from "js-cookie";
 
 export default function SignUpFormPage({
   params,
@@ -33,13 +34,18 @@ export default function SignUpFormPage({
       formData.get("company")?.toString(),
       formData.get("branch")?.toString(),
       formData.get("position")?.toString(),
-      formData.get("area")?.toString()
+      formData.get("region")?.toString()
     );
     const { data, error } = await signUp(register);
     if (error) {
       console.log(error.message);
     }
     if (data) {
+      Cookies.set("ccrm-token", data.jwtToken, {
+        expires: 30,
+      });
+      Cookies.remove("ccrm-temp-token");
+
       window.location.href = "/program";
     }
   };
@@ -124,7 +130,7 @@ export default function SignUpFormPage({
         <Input type="text" name="branch" placeholder="지점" />
         <Input type="text" name="position" placeholder="직책" />
 
-        <Input type="text" name="area" placeholder="지역" />
+        <Input type="text" name="region" placeholder="지역" />
       </div>
 
       <Button
