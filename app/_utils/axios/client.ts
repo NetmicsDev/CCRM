@@ -17,7 +17,7 @@ const axiosClient = axios.create({
 // 요청 인터셉터: JWT 토큰을 자동으로 헤더에 추가
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = Cookies.get("token"); // 쿠키에서 JWT 토큰 가져오기
+    const token = Cookies.get("ccrm-token"); // 쿠키에서 JWT 토큰 가져오기
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; // Authorization 헤더에 토큰 추가
     }
