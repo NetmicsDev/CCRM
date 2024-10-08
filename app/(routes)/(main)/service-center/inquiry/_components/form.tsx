@@ -6,9 +6,11 @@ import { TextArea, TextField } from "@/app/_components/Text";
 import { useRef } from "react";
 import Cookies from "js-cookie";
 import { apiRequest } from "@/app/_utils/axios/client";
+import useDialogStore from "@/app/_utils/dialog/store";
 
 export default function InquiryForm() {
   const formRef = useRef<HTMLFormElement>(null);
+  const { openAlert } = useDialogStore();
 
   const onSubmit = async (formData: FormData) => {
     const { data, error } = await apiRequest(
@@ -22,13 +24,17 @@ export default function InquiryForm() {
       }
     );
     if (error) {
-      // TODO: 팝업으로 대체
-      alert("문의 발송 실패!");
+      openAlert({
+        title: "문의 발송 실패",
+        description: error.message || "알 수 없는 오류",
+      });
     }
 
     if (data) {
-      // TODO: 팝업으로 대체
-      alert("문의 발송 성공!");
+      openAlert({
+        title: "문의 발송 성공",
+        description: "신속히 답변 드릴 수 있도록 하겠습니다!",
+      });
       formRef.current?.reset();
     }
   };

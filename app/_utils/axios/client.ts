@@ -2,8 +2,6 @@
 import { SimpleError } from "@/app/_types/error";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import Cookies from "js-cookie"; // 클라이언트에서 쿠키를 읽기 위한 js-cookie
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 // Axios 인스턴스 생성
 const axiosClient = axios.create({
@@ -70,7 +68,7 @@ export const apiRequest = async <T>(
       console.error("API Error:", _error.response?.data || _error.message);
 
       if (_error.response?.status === 401) {
-        authenticated = true;
+        authenticated = false;
       }
 
       error = _error;

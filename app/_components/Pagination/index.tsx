@@ -48,7 +48,7 @@ export default function Pagination({
       aria-label="Pagination"
     >
       <div className="hidden sm:block">
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-grayscale-5">
           {totalCount}개 항목 중{" "}
           {totalCount !== 0 && (
             <>
@@ -66,11 +66,12 @@ export default function Pagination({
       >
         <Link
           href={createPageUrl(currentPage - 1)}
+          scroll={false}
           className={cn(
-            "rounded-full p-2 hover:bg-gray-100",
+            "rounded-full p-2 hover:bg-grayscale-12",
             currentPage <= 1
-              ? "pointer-events-none text-gray-400"
-              : "text-gray-700"
+              ? "pointer-events-none text-grayscale-7"
+              : "text-grayscale-5"
           )}
         >
           <Icon type="left" className="h-6 w-6" />
@@ -80,11 +81,12 @@ export default function Pagination({
             <Link
               key={number}
               href={createPageUrl(number)}
+              scroll={false}
               className={cn(
                 "w-10 h-10 flex justify-center items-center text-sm font-medium rounded-full",
                 number === currentPage
-                  ? "bg-gray-500 text-white pointer-events-none"
-                  : "text-gray-500 hover:bg-gray-100"
+                  ? "bg-grayscale-12 text-white pointer-events-none"
+                  : "text-grayscale-7 hover:bg-grayscale-12"
               )}
             >
               {number}
@@ -93,11 +95,12 @@ export default function Pagination({
         </div>
         <Link
           href={createPageUrl(currentPage + 1)}
+          scroll={false}
           className={cn(
-            "rounded-full p-2 hover:bg-gray-100",
+            "rounded-full p-2 hover:bg-grayscale-12",
             currentPage >= totalPages
-              ? "pointer-events-none text-gray-400"
-              : "text-gray-700"
+              ? "pointer-events-none text-grayscale-7"
+              : "text-grayscale-5"
           )}
         >
           <Icon type="right" className="w-6 h-6 " />
