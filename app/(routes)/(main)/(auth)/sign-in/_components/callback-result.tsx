@@ -17,8 +17,9 @@ export default function CallbackResult() {
 
   if (result === "new") {
     Cookies.set("ccrm-temp-token", params.get("token")!);
+    // TODO: 팝업으로 대체
     alert("가입 내역이 없습니다. 회원가입 화면으로 이동합니다.");
-    router.replace("/auth/terms");
+    router.replace("/sign-up/terms");
   }
 
   const error = params.get("error");

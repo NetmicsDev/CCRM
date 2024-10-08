@@ -18,12 +18,12 @@ export async function GET(request: NextRequest) {
   try {
     // 서버로 코드 전달
     const response = await fetch(
-      `https://${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/api/auth/google/signin?code=${code}`,
+      `https://${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/api/auth/google/signin?code=${code}&redirectUri=${process.env.NEXT_PUBLIC_CLIENT_URL}/api/auth/google/callback`,
       { method: "GET" }
     );
 
     const data = await response.json();
-    console.info("Google OAuth data", data);
+
     if (response.status === 200) {
       // 인증 성공 시 로그인화면으로 토큰 반환
       return NextResponse.redirect(
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     } else if (response.status === 201) {
       // 회원가입 필요
       return NextResponse.redirect(
-        new URL("/sign-up?result=new&token=" + data.refreshToken, request.url)
+        new URL("/sign-in?result=new&token=" + data.refreshToken, request.url)
       );
     } else {
       return NextResponse.redirect(

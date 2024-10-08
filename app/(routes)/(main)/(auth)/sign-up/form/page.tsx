@@ -26,7 +26,7 @@ export default function SignUpFormPage({
 
   const handleSubmit = async (formData: FormData) => {
     const register = new RegisterModel(
-      formData.get("name")?.toString() ?? "",
+      formData.get("email")?.toString() ?? "",
       formData.get("email")?.toString() ?? "",
       formData.get("password")?.toString() ?? "",
       formData.get("name")?.toString() ?? "",
