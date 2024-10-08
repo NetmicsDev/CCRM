@@ -9,5 +9,15 @@
     "_utils": "Utils",
     "(routes)": "Routes"
   },
-  "svg.preview.background": "dark-transparent"
+  "svg.preview.background": "dark-transparent",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "window.zoomLevel": 1,
+  "editor.fontSize": 13
 }
