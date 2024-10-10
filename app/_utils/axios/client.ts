@@ -80,6 +80,7 @@ export const apiRequest = async <T>(
     if (!authenticated) {
       window.location.href = "/sign-in";
     }
+    console.log(response?.data);
     return {
       data: response?.data,
       error,
