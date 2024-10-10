@@ -2,10 +2,12 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
+import useDialogStore from "@/app/_utils/dialog/store";
 
 export default function CallbackResult() {
   const router = useRouter();
   const params = useSearchParams();
+  const { openAlert } = useDialogStore();
 
   const result = params.get("result");
   if (result === "success") {
@@ -17,8 +19,10 @@ export default function CallbackResult() {
 
   if (result === "new") {
     Cookies.set("ccrm-temp-token", params.get("token")!);
-    alert("가입 내역이 없습니다. 회원가입 화면으로 이동합니다.");
-    router.replace("/auth/terms");
+    openAlert({
+      title: "비회원 계정 안내",
+      description: "가입 내역이 없습니다. 회원가입 화면으로 이동합니다.",
+    }).then(() => router.replace("/sign-up/terms"));
   }
 
   const error = params.get("error");

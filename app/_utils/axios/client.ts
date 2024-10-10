@@ -2,8 +2,6 @@
 import { SimpleError } from "@/app/_types/error";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import Cookies from "js-cookie"; // 클라이언트에서 쿠키를 읽기 위한 js-cookie
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 // Axios 인스턴스 생성
 const axiosClient = axios.create({
@@ -17,7 +15,7 @@ const axiosClient = axios.create({
 // 요청 인터셉터: JWT 토큰을 자동으로 헤더에 추가
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = Cookies.get("token"); // 쿠키에서 JWT 토큰 가져오기
+    const token = Cookies.get("ccrm-token"); // 쿠키에서 JWT 토큰 가져오기
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; // Authorization 헤더에 토큰 추가
     }
@@ -70,7 +68,7 @@ export const apiRequest = async <T>(
       console.error("API Error:", _error.response?.data || _error.message);
 
       if (_error.response?.status === 401) {
-        authenticated = true;
+        authenticated = false;
       }
 
       error = _error;
@@ -82,6 +80,7 @@ export const apiRequest = async <T>(
     if (!authenticated) {
       window.location.href = "/sign-in";
     }
+    console.log(response?.data);
     return {
       data: response?.data,
       error,

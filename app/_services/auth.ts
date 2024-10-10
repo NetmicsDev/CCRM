@@ -25,9 +25,14 @@ export async function signIn(username: string, password: string) {
 
 export async function signUp(register: RegisterModel) {
   const googleToken = Cookies.get("ccrm-temp-token");
+  console.log(googleToken);
   const endpoint = googleToken ? "/auth/google/signup" : "/auth/signup";
   const requestData = googleToken
-    ? { ...register.toJson(), refreshToken: googleToken }
+    ? {
+        ...register.toJson(),
+        refreshToken: googleToken,
+        redirectUri: `${process.env.NEXT_PUBLIC_CLIENT_URL}/api/auth/google/callback`,
+      }
     : register.toJson();
 
   const { data, error } = await apiRequest<{

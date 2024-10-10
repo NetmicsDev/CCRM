@@ -20,7 +20,11 @@ export default function CheckBox({
   defaultChecked?: boolean;
   onChecked?: (isChecked: boolean) => void;
 }) {
-  const [checked, setChecked] = useState(defaultChecked);
+  const [checked, setChecked] = useState(false);
+  useEffect(() => {
+    setChecked(defaultChecked);
+  }, [defaultChecked]);
+
   return (
     <div className="flex flex-row items-center">
       <div className="relative w-4 h-[18px] mr-2">
