@@ -1,17 +1,9 @@
 import { create, State } from "zustand";
-import {
-  createJSONStorage,
-  persist,
-  PersistStorage,
-  StateStorage,
-  StorageValue,
-} from "zustand/middleware";
-import Cookies from "js-cookie";
+import { persist } from "zustand/middleware";
 import { UserDTO } from "@/app/_models/user"; // 사용자 정의 User 모델
 import { apiRequest } from "../axios/client";
 import { signIn, signUp } from "@/app/_services/auth";
 import RegisterModel from "@/app/_models/register";
-import { useEffect, useState } from "react";
 
 // **상태 인터페이스**
 interface AuthState {
@@ -19,7 +11,9 @@ interface AuthState {
   user: null | UserDTO;
   token: null | string;
   tempToken: null | string; // Google 가입을 위한 임시 토큰
+  fetching: boolean;
   error: string | null;
+  hasInitialized: boolean;
 }
 
 // **액션 인터페이스**
@@ -30,6 +24,7 @@ interface AuthActions {
   fetchUser: () => Promise<void>;
   saveToken: (token: string) => void;
   saveTempToken: (tempToken: string) => void;
+  initialize: () => void;
 }
 
 // **상태와 액션을 합친 스토어 인터페이스**
@@ -38,7 +33,7 @@ type AuthStore = AuthState & AuthActions;
 const isProduction = process.env.NODE_ENV === "production";
 
 // **스토어 생성**
-export const useAuthStore = create<AuthStore>()(
+const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       // **초기 상태**
@@ -46,15 +41,20 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       token: null,
       tempToken: null,
+      fetching: false,
       error: null,
+      hasInitialized: false,
 
       // **액션 구현**
       // 로그인 후 사용자 정보 받기
       login: async (email, password) => {
-        set({ error: null });
+        set({ fetching: true, error: null });
         const { data, error } = await signIn(email, password);
         if (error) {
-          set({ error: error.response?.data?.message || "로그인 실패" });
+          set({
+            fetching: false,
+            error: error.response?.data?.message || "로그인 실패",
+          });
           return;
         }
 
@@ -66,13 +66,17 @@ export const useAuthStore = create<AuthStore>()(
             },
           });
           if (error) {
-            set({ error: error.response?.data?.message || "사용자 정보 오류" });
+            set({
+              fetching: false,
+              error: error.response?.data?.message || "사용자 정보 오류",
+            });
             return;
           }
           set({
             isAuthenticated: true,
             token: data.jwtToken,
             user,
+            fetching: false,
             error: null,
           });
         }
@@ -80,10 +84,13 @@ export const useAuthStore = create<AuthStore>()(
 
       // 회원가입
       register: async (model) => {
-        set({ error: null });
-        const { data, error } = await signUp(model);
+        set({ fetching: true, error: null });
+        const { data, error } = await signUp(model, get().tempToken);
         if (error) {
-          set({ error: error.response?.data?.message || "회원가입 오류" });
+          set({
+            fetching: false,
+            error: error.response?.data?.message || "회원가입 오류",
+          });
         }
         if (data) {
           const { data: user, error } = await apiRequest<UserDTO>("/users/me", {
@@ -93,7 +100,10 @@ export const useAuthStore = create<AuthStore>()(
             },
           });
           if (error) {
-            set({ error: error.response?.data?.message || "사용자 정보 오류" });
+            set({
+              fetching: false,
+              error: error.response?.data?.message || "사용자 정보 오류",
+            });
             return;
           }
           set({
@@ -101,6 +111,7 @@ export const useAuthStore = create<AuthStore>()(
             token: data.jwtToken,
             tempToken: null,
             user,
+            fetching: false,
             error: null,
           });
         }
@@ -125,15 +136,18 @@ export const useAuthStore = create<AuthStore>()(
           return;
         }
 
-        set({ error: null });
+        set({ fetching: true, error: null });
         const { data: user, error } = await apiRequest<UserDTO>("/users/me", {
           method: "GET",
         });
         if (error) {
-          set({ error: error.response?.data?.message || "사용자 정보 오류" });
+          set({
+            fetching: false,
+            error: error.response?.data?.message || "사용자 정보 오류",
+          });
           return;
         }
-        set({ user });
+        set({ fetching: false, user });
       },
 
       saveToken: (token: string) => {
@@ -142,27 +156,19 @@ export const useAuthStore = create<AuthStore>()(
       saveTempToken: (tempToken: string) => {
         set({ tempToken });
       },
+      initialize: () => {
+        set({ hasInitialized: true });
+      },
     }),
     {
       name: "ccrm-auth", // 저장할 키 이름
+      onRehydrateStorage: () => (state, error) => {
+        if (!error && state) {
+          state.initialize(); // 상태 복원 완료 후 로딩 상태 해제
+        }
+      },
     }
   )
 );
 
-// **Hydration Error 방지를 위한 커스텀 훅**
-const useStore = <T, F>(
-  store: (callback: (state: T) => unknown) => unknown,
-  callback: (state: T) => F
-) => {
-  const result = store(callback) as F;
-  const [data, setData] = useState<F>();
-
-  useEffect(() => {
-    setData(result);
-  }, [result]);
-
-  return data;
-};
-
-const useAuth = () => useStore(useAuthStore, (state) => state);
-export default useAuth;
+export default useAuthStore;

@@ -27,6 +27,7 @@ export default function PurchasePage() {
     };
 
     fetchPurchaseHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

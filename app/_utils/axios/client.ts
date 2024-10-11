@@ -1,8 +1,6 @@
 "use client";
 import { SimpleError } from "@/app/_types/error";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import Cookies from "js-cookie"; // 클라이언트에서 쿠키를 읽기 위한 js-cookie
-import { useAuthStore } from "../auth/store";
 
 // Axios 인스턴스 생성
 const axiosClient = axios.create({
@@ -46,17 +44,18 @@ export const apiRequest = async <T>(
 ): Promise<{ data?: T; error?: AxiosError<any, any> }> => {
   let response;
   let error;
-  let authenticated = true;
   try {
     response = await axiosClient(url, {
       ...config,
       headers: {
         ...config?.headers,
-        Authorization: `Bearer ${
-          JSON.parse(
-            localStorage.getItem("ccrm-auth") ?? "{state:{token:null}}"
-          ).state.token
-        }`,
+        Authorization:
+          config?.headers?.Authorization ||
+          `Bearer ${
+            JSON.parse(
+              localStorage.getItem("ccrm-auth") ?? "{state:{token:null}}"
+            ).state.token
+          }`,
       },
     });
   } catch (_error) {

@@ -11,13 +11,13 @@ import Captcha, {
 } from "@/app/_components/Captcha";
 import useDialogStore from "@/app/_utils/dialog/store";
 import { useRouter } from "next/navigation";
-import useAuth from "@/app/_utils/auth/store";
+import useAuthStore from "@/app/_utils/auth/store";
 
 export default function ChangePasswordPage() {
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
   const { openAlert } = useDialogStore();
-  const auth = useAuth();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const [error, setError] = useState({
     current: "",
@@ -26,17 +26,17 @@ export default function ChangePasswordPage() {
   });
 
   useEffect(() => {
-    if (!(auth && router && openAlert)) {
+    if (!(router && openAlert)) {
       return;
     }
-    if (!auth.isAuthenticated) {
+    if (!isAuthenticated) {
       openAlert({
         title: "로그인 정보 없음",
         description: "로그인 페이지로 이동합니다",
       }).then(() => router.replace("/sign-in"));
       return;
     }
-  }, [auth, router, openAlert]);
+  }, [isAuthenticated, router, openAlert]);
 
   const onChangePassword = (formData: FormData) => {
     const newPassword = formData.get("new-password");

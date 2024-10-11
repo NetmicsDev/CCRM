@@ -1,9 +1,7 @@
 "use client";
 
 import { apiRequest } from "./../_utils/axios/client";
-import Cookies from "js-cookie";
 import RegisterModel from "../_models/register";
-import UserModel, { UserDTO } from "../_models/user";
 
 export async function signIn(username: string, password: string) {
   const { data, error } = await apiRequest<{
@@ -17,7 +15,10 @@ export async function signIn(username: string, password: string) {
   return { data, error };
 }
 
-export async function signUp(register: RegisterModel, googleToken?: string) {
+export async function signUp(
+  register: RegisterModel,
+  googleToken?: string | null
+) {
   const endpoint = googleToken ? "/auth/google/signup" : "/auth/signup";
   const requestData = googleToken
     ? {

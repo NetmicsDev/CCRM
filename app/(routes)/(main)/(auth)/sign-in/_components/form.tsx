@@ -10,25 +10,25 @@ import {
 } from "@/app/_utils/localstorage";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import useAuth from "@/app/_utils/auth/store";
+import useAuthStore from "@/app/_utils/auth/store";
 
 export default function LoginForm() {
   const router = useRouter();
   const [initialEmail, setInitialEmail] = useState("");
-  const auth = useAuth();
+  const { isAuthenticated, fetching, error } = useAuthStore();
+  const login = useAuthStore((state) => state.login);
 
   useEffect(() => {
-    console.log("Sign-in form", auth?.isAuthenticated);
-    if (!(auth && router)) {
+    if (!router) {
       return;
     }
 
-    if (auth.isAuthenticated) {
+    if (isAuthenticated) {
       router.replace("/program");
     }
 
     setInitialEmail(getRememberedUserEmail());
-  }, [auth, router]);
+  }, [isAuthenticated, router]);
 
   const handleSignIn = async (formData: FormData) => {
     const email = formData.get("email")?.toString() ?? "";
@@ -40,8 +40,7 @@ export default function LoginForm() {
     } else if (initialEmail) {
       deleteRememberedUserEmail();
     }
-
-    await auth?.login(email, password);
+    await login(email, password);
   };
 
   return (
@@ -61,12 +60,13 @@ export default function LoginForm() {
         className="w-full mt-2"
         required
       />
-      {auth?.error && <p className="text-xs text-sub-4 mt-2">{auth.error}</p>}
+      {error && <p className="text-xs text-sub-4 mt-2">{error}</p>}
       <Button
         type="submit"
         className="w-full mt-4 shadow-grayscale-10 shadow-md"
         color="primary"
         title="로그인"
+        disabled={fetching}
       />
       <div className="flex flex-col self-start mt-4 gap-2">
         <CheckBox

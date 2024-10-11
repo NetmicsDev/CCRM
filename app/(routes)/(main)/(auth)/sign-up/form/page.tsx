@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Input, TextField } from "@/app/_components/Text";
 import { Button } from "@/app/_components/Button";
 import { useRouter } from "next/navigation";
 import RegisterModel from "@/app/_models/register";
 import useDialogStore from "@/app/_utils/dialog/store";
-import useAuth from "@/app/_utils/auth/store";
+import useAuthStore from "@/app/_utils/auth/store";
 
 export default function SignUpFormPage({
   searchParams,
@@ -24,31 +24,8 @@ export default function SignUpFormPage({
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [phone, setPhone] = useState("");
 
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  const auth = useAuth();
-
-  useEffect(() => {
-    if (!router) {
-      return;
-    }
-    if (!auth?.isAuthenticated) {
-      return;
-    }
-
-    if (!hasSubmitted) {
-      // 로그인 상태에서 페이지 방문 시
-      openAlert({
-        title: "회원가입 불가",
-        description: "이미 로그인하신 상태입니다. 이전 페이지로 돌아갑니다.",
-      }).then(() => router.back);
-    } else {
-      // 회원가입 성공 시
-      openAlert({
-        title: "환영합니다",
-        description: "회원가입이 완료되었습니다.",
-      }).then(() => router.push("/"));
-    }
-  }, [router, hasSubmitted, auth, openAlert]);
+  const fetching = useAuthStore((state) => state.fetching);
+  const register = useAuthStore((state) => state.register);
 
   const handleSubmit = async (formData: FormData) => {
     const model = new RegisterModel(
@@ -62,8 +39,11 @@ export default function SignUpFormPage({
       formData.get("position")?.toString(),
       formData.get("region")?.toString()
     );
-    setHasSubmitted(true);
-    await auth?.register(model);
+    await register(model);
+    openAlert({
+      title: "환영합니다",
+      description: "회원가입이 완료되었습니다.",
+    }).then(() => router.push("/"));
   };
 
   const checkEmailDuplication = () => {
@@ -153,7 +133,7 @@ export default function SignUpFormPage({
         type="submit"
         title="회원가입하기"
         className="mt-10 shadow-md shadow-grayscale-9"
-        disabled
+        disabled={fetching}
       />
     </form>
   );

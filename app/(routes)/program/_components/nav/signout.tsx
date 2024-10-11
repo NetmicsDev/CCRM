@@ -1,14 +1,14 @@
 "use client";
 
 import { OutlineButton } from "@/app/_components/Button";
-import { useAuthStore } from "@/app/_utils/auth/store";
+import useAuthStore from "@/app/_utils/auth/store";
 import useDialogStore from "@/app/_utils/dialog/store";
 import { useRouter } from "next/navigation";
 
 export default function SignoutButton() {
   const router = useRouter();
   const { openConfirm, openAlert } = useDialogStore();
-  const { logout } = useAuthStore();
+  const logout = useAuthStore((state) => state.logout);
 
   const handleSignout = async () => {
     const result = await openConfirm({

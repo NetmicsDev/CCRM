@@ -9,20 +9,19 @@ import useDialogStore from "@/app/_utils/dialog/store";
 import { useRouter } from "next/navigation";
 import UserModel from "@/app/_models/user";
 import ProfileUpload from "./profile-upload";
-import useAuth from "@/app/_utils/auth/store";
+import useAuthStore from "@/app/_utils/auth/store";
 
 export default function MemberPage() {
   const router = useRouter();
   const [userData, setUserData] = useState<UserModel>();
   const { openAlert, openConfirm } = useDialogStore();
-  const auth = useAuth();
+  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
-    if (!(auth && router && openAlert)) {
+    if (!(router && openAlert)) {
       return;
     }
-
-    if (!auth.isAuthenticated || !auth.user) {
+    if (!user) {
       openAlert({
         title: "로그인 정보 없음",
         description: "로그인 페이지로 이동합니다",
@@ -30,8 +29,8 @@ export default function MemberPage() {
       return;
     }
 
-    setUserData(UserModel.fromJson(auth.user));
-  }, [auth, router, openAlert]);
+    setUserData(UserModel.fromJson(user));
+  }, [user, router, openAlert]);
 
   const onModify = (formData: FormData) => {
     // TODO: API Call
