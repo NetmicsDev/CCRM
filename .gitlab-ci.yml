@@ -1,47 +1,45 @@
 stages:
-    - build
-    #    - test
-    - deploy
-    - .post
+  - build
+  #    - test
+  - deploy
+  - .post
 
 variables:
-    IMAGE_NAME: "ccrm-user"
-    IMAGE_VERSION: "0.1.0"
-    DOCKER_HOST: tcp://172.17.0.1:2375
-    SERVICE_NAME: "ccrm-user"
-    VOLUME_NAME: "ccrm_user_data"
+  IMAGE_NAME: "ccrm-user"
+  IMAGE_VERSION: "0.1.0"
+  DOCKER_HOST: tcp://172.17.0.1:2375
+  SERVICE_NAME: "ccrm-user"
+  ENV_PATH: "/home/envs/.ccrm-user-env"
 
 before_script:
-    - echo "Starting CI/CD pipeline"
+  - echo "Starting CI/CD pipeline"
 
 # Step 1: Build Docker Image
 build:
-    stage: build
-    script:
-        - docker build -t $IMAGE_NAME .
-
+  stage: build
+  script:
+    - docker build -t $IMAGE_NAME .
 
 # Step 2: Deploy (e.g., push to Docker Hub or deploy to server)
 deploy:
-    stage: deploy
-    script:
-        - docker tag $IMAGE_NAME $IMAGE_NAME:$IMAGE_VERSION
+  stage: deploy
+  script:
+    - docker tag $IMAGE_NAME $IMAGE_NAME:$IMAGE_VERSION
 
-        - docker stop $SERVICE_NAME || true
-        - docker rm $SERVICE_NAME || true
+    - docker stop $SERVICE_NAME || true
+    - docker rm $SERVICE_NAME || true
 
-        - docker run -d --name $SERVICE_NAME --network docker-compose_default --mount source=$VOLUME_NAME,target=/app $IMAGE_NAME:$IMAGE_VERSION
-
+      - docker run -d --name $SERVICE_NAME --network docker-compose_default --mount source=$VOLUME_NAME,target=/app $IMAGE_NAME:$IMAGE_VERSION
 
 # Step 3: Cleanup old Docker images
 cleanup:
-    stage: .post
-    script:
-        # 사용되지 않는 Docker 이미지 정리
-        - |
-          protected_images=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep ':protected')
-          for image in $(docker images -q --filter "until=24h"); do
-            if ! docker inspect --format="{{.RepoTags}}" $image | grep -q ":protected"; then
-              docker rmi -f $image
-            fi
-          done
+  stage: .post
+  script:
+    # 사용되지 않는 Docker 이미지 정리
+    - |
+      protected_images=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep ':protected')
+      for image in $(docker images -q --filter "until=24h"); do
+        if ! docker inspect --format="{{.RepoTags}}" $image | grep -q ":protected"; then
+          docker rmi -f $image
+        fi
+      done
