@@ -1,31 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input, TextField } from "@/app/_components/Text";
 import { Button } from "@/app/_components/Button";
 import { useRouter } from "next/navigation";
 import RegisterModel from "@/app/_models/register";
-import { signUp } from "@/app/_services/auth";
-import Cookies from "js-cookie";
+import useDialogStore from "@/app/_utils/dialog/store";
+import useAuth from "@/app/_utils/auth/store";
 
 export default function SignUpFormPage({
-  params,
   searchParams,
 }: {
-  params: {};
   searchParams: {
     terms: string;
     privacy: string;
   };
 }) {
   const router = useRouter();
+  const { openAlert } = useDialogStore();
+
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [phone, setPhone] = useState("");
 
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (!router) {
+      return;
+    }
+    if (!auth?.isAuthenticated) {
+      return;
+    }
+
+    if (!hasSubmitted) {
+      // 로그인 상태에서 페이지 방문 시
+      openAlert({
+        title: "회원가입 불가",
+        description: "이미 로그인하신 상태입니다. 이전 페이지로 돌아갑니다.",
+      }).then(() => router.back);
+    } else {
+      // 회원가입 성공 시
+      openAlert({
+        title: "환영합니다",
+        description: "회원가입이 완료되었습니다.",
+      }).then(() => router.push("/"));
+    }
+  }, [router, hasSubmitted, auth, openAlert]);
+
   const handleSubmit = async (formData: FormData) => {
-    const register = new RegisterModel(
+    const model = new RegisterModel(
       formData.get("email")?.toString() ?? "",
       formData.get("email")?.toString() ?? "",
       formData.get("password")?.toString() ?? "",
@@ -36,18 +62,8 @@ export default function SignUpFormPage({
       formData.get("position")?.toString(),
       formData.get("region")?.toString()
     );
-    const { data, error } = await signUp(register);
-    if (error) {
-      console.log(error.message);
-    }
-    if (data) {
-      Cookies.set("ccrm-token", data.jwtToken, {
-        expires: 30,
-      });
-      Cookies.remove("ccrm-temp-token");
-
-      window.location.href = "/program";
-    }
+    setHasSubmitted(true);
+    await auth?.register(model);
   };
 
   const checkEmailDuplication = () => {

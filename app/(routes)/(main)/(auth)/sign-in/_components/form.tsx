@@ -3,7 +3,6 @@
 import { Button } from "@/app/_components/Button";
 import { CheckBox } from "@/app/_components/CheckBox";
 import { Input } from "@/app/_components/Text";
-import { signIn } from "@/app/_services/auth";
 import {
   deleteRememberedUserEmail,
   getRememberedUserEmail,
@@ -11,22 +10,25 @@ import {
 } from "@/app/_utils/localstorage";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { flushSync } from "react-dom";
-import Cookies from "js-cookie";
+import useAuth from "@/app/_utils/auth/store";
 
 export default function LoginForm() {
   const router = useRouter();
   const [initialEmail, setInitialEmail] = useState("");
-  const [error, setError] = useState("");
+  const auth = useAuth();
 
   useEffect(() => {
-    const token = Cookies.get("ccrm-token");
-    if (token) {
+    console.log("Sign-in form", auth?.isAuthenticated);
+    if (!(auth && router)) {
+      return;
+    }
+
+    if (auth.isAuthenticated) {
       router.replace("/program");
     }
 
     setInitialEmail(getRememberedUserEmail());
-  }, [router]);
+  }, [auth, router]);
 
   const handleSignIn = async (formData: FormData) => {
     const email = formData.get("email")?.toString() ?? "";
@@ -39,17 +41,7 @@ export default function LoginForm() {
       deleteRememberedUserEmail();
     }
 
-    flushSync(() => setError(""));
-
-    const { data, error } = await signIn(email, password);
-    if (error) {
-      setError(
-        (error.response?.data as { message: string }).message || error.message
-      );
-    }
-    if (data) {
-      window.location.href = "/program";
-    }
+    await auth?.login(email, password);
   };
 
   return (
@@ -69,7 +61,7 @@ export default function LoginForm() {
         className="w-full mt-2"
         required
       />
-      {error && <p className="text-xs text-sub-4 mt-2">{error}</p>}
+      {auth?.error && <p className="text-xs text-sub-4 mt-2">{auth.error}</p>}
       <Button
         type="submit"
         className="w-full mt-4 shadow-grayscale-10 shadow-md"

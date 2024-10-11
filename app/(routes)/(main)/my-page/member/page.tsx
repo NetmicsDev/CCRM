@@ -1,25 +1,28 @@
 "use client";
 
 import { Button } from "@/app/_components/Button";
-import { TextArea, TextField } from "@/app/_components/Text";
+import { TextField } from "@/app/_components/Text";
 import PageTitle from "../_components/page-title";
 import TextLabel from "@/app/_components/Text/label";
 import { useEffect, useState } from "react";
-import { apiRequest } from "@/app/_utils/axios/client";
 import useDialogStore from "@/app/_utils/dialog/store";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { getUser } from "@/app/_services/user";
 import UserModel from "@/app/_models/user";
 import ProfileUpload from "./profile-upload";
+import useAuth from "@/app/_utils/auth/store";
 
 export default function MemberPage() {
   const router = useRouter();
   const [userData, setUserData] = useState<UserModel>();
   const { openAlert, openConfirm } = useDialogStore();
+  const auth = useAuth();
 
   useEffect(() => {
-    if (!Cookies.get("ccrm-token")) {
+    if (!(auth && router && openAlert)) {
+      return;
+    }
+
+    if (!auth.isAuthenticated || !auth.user) {
       openAlert({
         title: "로그인 정보 없음",
         description: "로그인 페이지로 이동합니다",
@@ -27,17 +30,16 @@ export default function MemberPage() {
       return;
     }
 
-    const fetchUserData = async () => {
-      const { data } = await getUser();
-      setUserData(data);
-    };
+    setUserData(UserModel.fromJson(auth.user));
+  }, [auth, router, openAlert]);
 
-    fetchUserData();
-  }, []);
   const onModify = (formData: FormData) => {
     // TODO: API Call
 
-    alert(`${formData.get("phone")} 수정되었습니다`);
+    openAlert({
+      title: "회원정보 변경 완료",
+      description: "회원 정보가 성공적으로 변경되었습니다",
+    });
   };
 
   return (
