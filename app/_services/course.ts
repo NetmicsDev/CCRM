@@ -3,14 +3,14 @@
 import { AxiosError } from "axios";
 import CourseModel, { CourseDTO } from "../_models/course";
 import PageList from "../_models/page-list";
-import { apiRequest } from "../_utils/axios/client";
+import { apiRequest, SimpleResponse } from "../_utils/axios/client";
 
 const endpoint = "/customer-support/lecture";
 
 export async function getCourses(
   page: number,
   limit: number = 10
-): Promise<{ data: PageList<CourseModel> | undefined; error?: AxiosError }> {
+): Promise<SimpleResponse<PageList<CourseModel>>> {
   const { data, error } = await apiRequest<PageList<CourseDTO>>(endpoint, {
     method: "GET",
     params: { page, limit },
