@@ -1,4 +1,4 @@
-import { ProgramMainSearchBar } from "./_components/nav/search";
+import ProgramMainSearchBar from "./_components/nav/search";
 import { ProgramSearchResult } from "../../_types/model";
 import SearchItem from "./search/search-item";
 
@@ -34,11 +34,7 @@ export default function ProgramPage() {
         </span>
         <div className="mt-2 flex space-x-2 text-main-5 font-semibold">
           {searchRecommendList.map((element, index) => (
-            <a
-              key={element}
-              href="#"
-              className="hover:underline"
-            >
+            <a key={element} href="#" className="hover:underline">
               #{element}
             </a>
           ))}

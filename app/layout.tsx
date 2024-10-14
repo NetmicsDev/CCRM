@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="kr"
       className={`${pretendard.variable} font-pretendard text-main-1 text-base font-light`}
     >
-      <body className="min-h-screen">
+      <body className="w-screen min-h-screen">
         <AuthHydration>{children}</AuthHydration>
         {modal}
         <DialogManager />
