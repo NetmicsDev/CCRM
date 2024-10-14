@@ -1,6 +1,6 @@
 import ProgramNavItem from "./item";
 import ProgramNavItemWithSub from "./item-sub";
-import ProgramSearchBar from "./search";
+import NavSearchBar from "./search";
 import Profile from "./profile";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +17,7 @@ export default function ProgramNav() {
       {/* 프로필 */}
       <Profile />
       {/* 통합검색 */}
-      <ProgramSearchBar />
+      <NavSearchBar />
       {/* NavItems */}
       <div className="w-full overflow-y-auto scroll-m-0 scrollbar-hide">
         <ProgramNavItem
