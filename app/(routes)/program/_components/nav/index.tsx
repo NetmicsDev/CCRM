@@ -3,13 +3,17 @@ import ProgramNavItemWithSub from "./item-sub";
 import ProgramSearchBar from "./search";
 import Profile from "./profile";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ProgramNav() {
   return (
     <nav className="fixed flex flex-col h-screen items-stretch w-60 z-10 bg-main-2 text-grayscale-14">
-      <div className="flex min-h-16 justify-center items-center border-b border-grayscale-9">
+      <Link
+        href={"/program"}
+        className="flex min-h-16 justify-center items-center border-b border-grayscale-9"
+      >
         <Image src="/images/white-logo.svg" alt="logo" width={64} height={20} />
-      </div>
+      </Link>
       {/* 프로필 */}
       <Profile />
       {/* 통합검색 */}
