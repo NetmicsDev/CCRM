@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="kr"
-      className={`${pretendard.variable} font-pretendard text-main-1 text-base font-light`}
+      className={`${pretendard.variable} font-pretendard text-main-1 text-sm 2xl:text-base font-light`}
     >
       <body className="w-screen min-h-screen">
         <AuthHydration>{children}</AuthHydration>
