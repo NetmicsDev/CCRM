@@ -35,22 +35,23 @@ export default function MorningReadingPage() {
       <div className="flex items-center px-6">
         <div className="w-[400px] flex flex-col space-y-4 ">
           <div>
-            <TextField title="성명" caution="필수" />
+            <TextField title="성명" caution="필수" className="h-12" />
           </div>
           <div>
-            <TextField title="소속사" caution="필수" />
+            <TextField title="소속사" caution="필수" className="h-12" />
           </div>
           <div>
-            <TextField title="이메일" caution="필수" />
+            <TextField title="이메일" caution="필수" className="h-12" />
           </div>
           <div>
-            <TextField title="휴대폰 번호" caution="필수" />
+            <TextField title="휴대폰 번호" caution="필수" className="h-12" />
           </div>
           <div>
             <TextField
               title="팩스 번호"
               caution="선택"
               cautionClassName="text-grayscale-6"
+              className="h-12"
             />
           </div>
           <div>
@@ -58,6 +59,7 @@ export default function MorningReadingPage() {
               title="연구소 링크 주소"
               caution="선택"
               cautionClassName="text-grayscale-6"
+              className="h-12"
             />
           </div>
           <div>
@@ -65,6 +67,7 @@ export default function MorningReadingPage() {
               title="자격/경력"
               caution="선택"
               cautionClassName="text-grayscale-6"
+              className="h-12"
             />
           </div>
           <div>
@@ -72,9 +75,10 @@ export default function MorningReadingPage() {
               title="서비스 내용"
               caution="선택"
               cautionClassName="text-grayscale-6"
+              className="h-12"
             />
           </div>
-          <TextArea label="소개글" />
+          <TextArea label="소개글" className="h-32" />
           <PrimaryButton title="구독하기" color="main" />
         </div>
       </div>
