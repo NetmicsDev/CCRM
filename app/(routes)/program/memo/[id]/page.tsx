@@ -17,7 +17,7 @@ export default function MemoEditPage({ params }: { params: { id: string } }) {
   return (
     <div className="flex flex-col gap-4 w-full max-w-screen-lg max-h-[calc(100vh-11rem)] mx-auto py-4">
       <Link
-        href={"/program/message/sms"}
+        href={"/program/memo"}
         className="underline underline-offset-2 text-grayscale-6"
       >
         {"< 뒤로가기"}
