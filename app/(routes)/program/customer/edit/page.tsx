@@ -37,7 +37,7 @@ export default function CustomerEditPage() {
 
       //데이터가 이상하면 404
       if (!clientId || isNaN(clientId)) {
-        router.push("/404");
+        router.push("/program/404");
         return;
       }
 
@@ -46,13 +46,13 @@ export default function CustomerEditPage() {
           const clientData = await clientDao.getClient(clientId);
           console.log(clientData);
           if (!clientData) {
-            router.push("/404");
+            router.push("/program/404");
           } else {
             setFormData(clientData.toDTO()); 
           }
         } catch (error) {
           console.error(error);
-          router.push("/404");
+          router.push("/program/404");
         }
       };
 
