@@ -1,7 +1,7 @@
 "use client";
 
-import { CalendarEvent } from "../_models/calendar";
-import { googleRequest } from "../_utils/axios/google";
+import { CalendarEvent } from "@/app/_models/calendar";
+import { googleRequest } from "@/app/_utils/axios/google";
 
 export async function getCalendarEvents(): Promise<{
   data?: CalendarEvent[];
