@@ -8,22 +8,24 @@ export default function CheckBox({
   label,
   name,
   color = "main",
+  checked, 
   defaultChecked = false,
   onChecked,
 }: {
-  label: string;
+  label?: string;
   name: string;
   color?: "main" | "sub";
   // defaultChecked는 웃긴게 false든 true는 첫 값에서 render를 바꿀 수 없다.
   // 첫 프레임에 바로 설정할게 아니라면 undefined를 초기값으로 건내야한다.
   // 그래서 checked를 더 추천한다
+  checked?: boolean; 
   defaultChecked?: boolean;
   onChecked?: (isChecked: boolean) => void;
 }) {
-  const [checked, setChecked] = useState(false);
-  useEffect(() => {
-    setChecked(defaultChecked);
-  }, [defaultChecked]);
+  // const [checked, setChecked] = useState(false);
+  // useEffect(() => {
+  //   setChecked(defaultChecked);
+  // }, [defaultChecked]);
 
   return (
     <div className="flex flex-row items-center">
@@ -41,10 +43,8 @@ export default function CheckBox({
             }
           )}
           checked={checked}
-          onChange={(e) => {
-            setChecked(e.target.checked);
-            onChecked?.(e.target.checked);
-          }}
+          onChange={(e) => onChecked?.(e.target.checked)} 
+        
         />
         <label htmlFor={name}>
           <Icon
@@ -53,7 +53,7 @@ export default function CheckBox({
           />
         </label>
       </div>
-      <span>{label}</span>
+      {label && <span>{label}</span>}
     </div>
   );
 }

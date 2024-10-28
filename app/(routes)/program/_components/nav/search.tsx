@@ -2,7 +2,7 @@
 
 import { SearchField } from "@/app/_components/Text";
 
-export default function ProgramSearchBar() {
+export default function NavSearchBar() {
   return (
     <SearchField
       onSearch={() => {}}

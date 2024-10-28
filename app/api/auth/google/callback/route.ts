@@ -5,6 +5,10 @@ import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
+  const error = url.searchParams.get("error");
+  if (error) {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
   const code = url.searchParams.get("code");
   // const state = url.searchParams.get("state"); // CSRF 방지를 위한 state 파라미터 (추가 권장)
 
@@ -21,9 +25,8 @@ export async function GET(request: NextRequest) {
       `https://${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/api/auth/google/signin?code=${code}&redirectUri=${process.env.NEXT_PUBLIC_CLIENT_URL}/api/auth/google/callback`,
       { method: "GET" }
     );
-
     const data = await response.json();
-
+    console.log(response.status, data);
     if (response.status === 200) {
       // 인증 성공 시 로그인화면으로 토큰 반환
       return NextResponse.redirect(
