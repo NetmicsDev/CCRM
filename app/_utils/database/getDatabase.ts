@@ -1,6 +1,11 @@
 "use client";
 import initSqlJs, { Database } from "sql.js";
 import { setupTables } from "./tableSetup";
+import {
+  loadDatabaseFromDrive,
+  updateDatabaseToDrive,
+  uploadDatabaseToDrive,
+} from "@/app/_services/google/customer";
 
 declare global {
   interface Window {
@@ -37,10 +42,19 @@ async function initializeDatabase(): Promise<Database> {
       "https://minio-data.habartech.com/ccrm-dev/statics/sql-wasm.wasm",
   });
 
-  const db = new SQL.Database();
-  console.log("New database initialized and stored globally.");
-
-  await setupTables(db);
+  // ** 드라이브 결과값에 따라 초기값 세팅 분기
+  let db;
+  const { data, error } = await loadDatabaseFromDrive();
+  if (error || data!.id === "NONE") {
+    console.error(error);
+    db = new SQL.Database();
+    console.log("New database initialized and stored globally.");
+    await setupTables(db);
+  } else {
+    const { id, data: buffer } = data!;
+    db = new SQL.Database(buffer);
+    console.log("database initialized and stored globally from Drive");
+  }
 
   return db;
 }
@@ -50,6 +64,21 @@ export async function downloadDatabase(): Promise<void> {
 
   // 데이터베이스를 바이너리 형식으로 추출
   const binaryArray = db.export();
+
+  // ** 드라이브에 추가 **
+  // ** data는 추가한 파일의 ID
+  const { data, error } = await uploadDatabaseToDrive(
+    binaryArray,
+    "database.sqlite"
+  );
+  if (error || !data) {
+    console.error(error);
+  }
+  return;
+
+  // ** 드라이브에 업데이트 **
+  // ** DB_ID 필요, 응답은 boolean
+  // const isSuccess = await updateDatabaseToDrive(DB_ID, binaryArray);
 
   // Blob으로 변환
   const blob = new Blob([binaryArray], { type: "application/octet-stream" });
@@ -72,6 +101,16 @@ export async function loadDatabaseFromFile(file: File): Promise<Database> {
     locateFile: (file) =>
       "https://minio-data.habartech.com/ccrm-dev/statics/sql-wasm.wasm",
   });
+
+  // ** 드라이브에서 꺼내올 때 사용 **
+  // ** data.id는 파일의 ID, data.data는 버퍼데이터
+  // ** data.id가 NONE이면 폴더는 있는데 파일이 없는 것
+  // const {data, error} = await loadDatabaseFromDrive()
+  // if (error || data!.id === "NONE") {
+  //   console.error(error)
+  //   // return null or undefined
+  // }
+  // const buffer = data!.data;
 
   // 파일을 읽고 SQLite 데이터베이스로 변환
   const arrayBuffer = await file.arrayBuffer();

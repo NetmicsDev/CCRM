@@ -101,7 +101,7 @@ export async function getDriveFiles(directoryId: string) {
     params: {
       q: `'${directoryId}' in parents`,
       fields:
-        "files(id, name, mimeType, parents, modifiedTime, webContentLink)",
+        "files(id, name, mimeType, parents,size,  modifiedTime, webContentLink)",
     },
   });
   if (error) {
