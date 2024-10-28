@@ -17,7 +17,7 @@ function blobToUint8Array(blob: Blob): Promise<Uint8Array> {
 export async function loadDatabaseFromDrive(): Promise<{
   data?: {
     id: string;
-    data: Uint8Array<ArrayBufferLike>;
+    data: Uint8Array;
   };
   error?: string;
 }> {
