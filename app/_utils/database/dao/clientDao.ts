@@ -42,6 +42,8 @@ export class ClientDao {
     const query = generateDeleteQuery("client", `id = ${id}`);
     db.run(query);
   }
+
+
   async deleteClients(ids: number[]): Promise<void> {
     if (ids.length === 0) return;
   
@@ -50,6 +52,20 @@ export class ClientDao {
     const query = generateDeleteQuery("client", `id IN (${idList})`);
     db.run(query);
   }
+
+  async deleteClientsTransaction(ids: number[]): Promise<void> {
+    if (ids.length === 0) return;
+    const db = await getDatabase();
+    
+    const idList = ids.join(", ");
+    //해당 유저의 상담 목록도 지움
+    await db.exec('BEGIN TRANSACTION');
+    await db.run(generateDeleteQuery("client", `id IN (${idList})`));
+    await db.run(generateDeleteQuery("consultation", `clientId IN (${idList})`));
+    await db.exec('COMMIT');
+  }
+
+  
 
   async getClient(id: number): Promise<ClientModel | null> {
     const db = await getDatabase();
