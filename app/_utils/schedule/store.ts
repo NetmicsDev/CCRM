@@ -38,7 +38,7 @@ interface ScheduleStore {
 
 // Zustand store 정의
 export const useScheduleStore = create<ScheduleStore>((set) => ({
-  schedules: mockSchedules, // 초기 스케줄 데이터
+  schedules: [], // 초기 스케줄 데이터
   // API에서 데이터를 가져와 초기화하는 액션
   loadSchedules: (data: CalendarEvent[]) => {
     set({ schedules: data });

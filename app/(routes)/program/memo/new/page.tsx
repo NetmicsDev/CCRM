@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 
 export default function NewMemoPage() {
   const router = useRouter();
-  const openAlert = useDialogStore((state) => state.openAlert);
+  const { openAlert, openLoading, closeDialog } = useDialogStore();
   const directoryId = useMemoStore((state) => state.directory?.id);
   const loadDirectory = useMemoStore((state) => state.loadDirectory);
   const addMemo = useMemoStore((state) => state.addMemo);
@@ -22,7 +22,12 @@ export default function NewMemoPage() {
 
   useEffect(() => {
     if (!directoryId) {
-      loadDirectory();
+      const fetchDirectory = async () => {
+        openLoading("업무일지 드라이브 연동중...");
+        await loadDirectory();
+        closeDialog();
+      };
+      fetchDirectory();
     }
   }, [directoryId]);
 
@@ -39,7 +44,9 @@ export default function NewMemoPage() {
   };
 
   const addNewMemo = async () => {
+    openLoading("업무일지를 저장하는 중입니다...");
     const { data, error } = await uploadMemoFile(title, content, directoryId);
+    closeDialog();
     if (error || !data) {
       openAlert({
         title: "저장 실패",

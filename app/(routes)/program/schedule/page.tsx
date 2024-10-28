@@ -7,12 +7,14 @@ import useDialogStore from "@/app/_utils/dialog/store";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
 
 export default function ScheduleListPage() {
-  const openAlert = useDialogStore((state) => state.openAlert);
+  const { openAlert, openLoading, closeDialog } = useDialogStore();
   const loadSchedules = useScheduleStore((state) => state.loadSchedules);
 
   useEffect(() => {
     async function fetchEvents() {
+      openLoading("구글 캘린더 연동중...");
       const { data, error } = await getCalendarEvents();
+      closeDialog();
       if (error) {
         openAlert({
           title: "구글 캘린더 연동 실패",

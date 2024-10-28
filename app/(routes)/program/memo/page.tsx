@@ -9,13 +9,20 @@ import { useEffect, useState } from "react";
 import { DriveDirectory } from "@/app/_models/drive";
 import { loadMemoDrive } from "@/app/_services/google/memo";
 import { useMemoStore } from "@/app/_utils/memo/store";
+import useDialogStore from "@/app/_utils/dialog/store";
 
 export default function MemoPage() {
+  const { openLoading, closeDialog } = useDialogStore();
   const { directory, loadDirectory } = useMemoStore();
 
   useEffect(() => {
     if (directory) return;
-    loadDirectory();
+    const fetchData = async () => {
+      openLoading("업무일지를 받아오는 중입니다...");
+      await loadDirectory();
+      closeDialog();
+    };
+    fetchData();
   }, [directory]);
 
   return (

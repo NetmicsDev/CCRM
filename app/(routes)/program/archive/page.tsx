@@ -20,21 +20,23 @@ import {
 } from "@/app/_constants/gdrive";
 import cn from "@/app/_utils/cn";
 import { flushSync } from "react-dom";
+import useDialogStore from "@/app/_utils/dialog/store";
 
 export default function ArchivePage() {
   const { directory, loadDirectory, addFile } = useGoogleDriveStore();
-  const [loading, setLoading] = useState(false);
+  const { openLoading, closeDialog } = useDialogStore();
 
   useEffect(() => {
+    if (directory) return;
     const fetchDriveFiles = async () => {
-      flushSync(() => setLoading(true));
+      openLoading("드라이브 자료들을 가져오는 중입니다...");
       const { data: folderData, error: folderError } = await loadMainDrive();
       if (folderError || !folderData) {
         console.error(folderError);
         return;
       }
       const { data, error } = await getDriveFiles(folderData.id);
-      setLoading(false);
+      closeDialog();
       if (error || !data) {
         console.error(error);
         return;
@@ -43,26 +45,29 @@ export default function ArchivePage() {
       loadDirectory(folderData);
     };
     fetchDriveFiles();
-  }, []);
+  }, [directory]);
 
   const handleFolderAdd = async () => {
-    flushSync(() => setLoading(true));
-    const { data, error } = await uploadFolder("Test Folder", directory?.id);
-    setLoading(false);
-    if (error || !data) {
-      console.error(error);
-      return;
-    }
+    const folderName = window.prompt("폴더 이름을 입력하세요");
+    if (folderName) {
+      openLoading("폴더를 추가하는 중입니다...");
+      const { data, error } = await uploadFolder(folderName, directory?.id);
+      closeDialog();
+      if (error || !data) {
+        console.error(error);
+        return;
+      }
 
-    addFile(data as DriveItem);
+      addFile(data as DriveItem);
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      flushSync(() => setLoading(true));
+      openLoading("파일을 업로드하는 중입니다...");
       const file = e.target.files[0];
       const { data, error } = await uploadFile(file, directory?.id);
-      setLoading(false);
+      closeDialog();
 
       if (error || !data) {
         console.error(error);
@@ -74,9 +79,9 @@ export default function ArchivePage() {
   };
 
   const handleBack = async () => {
-    flushSync(() => setLoading(true));
+    openLoading("상위폴더를 불러오는 중입니다...");
     const { data, error } = await getParentDirectory(directory!.parents![0]);
-    setLoading(false);
+    closeDialog();
     if (error || !data) {
       console.error(error);
       return;
@@ -96,10 +101,7 @@ export default function ArchivePage() {
       <div className="flex justify-end gap-4">
         <div
           className={cn(
-            "text-grayscale-14 px-6 py-2 rounded text-lg font-medium ",
-            loading
-              ? "bg-grayscale-7 cursor-not-allowed"
-              : "bg-main-2 hover:bg-main-3 cursor-pointer"
+            "text-grayscale-14 px-6 py-2 rounded text-lg font-medium bg-main-2 hover:bg-main-3 cursor-pointer"
           )}
           onClick={handleFolderAdd}
         >
@@ -108,10 +110,7 @@ export default function ArchivePage() {
         <label
           htmlFor="upload-drive-file"
           className={cn(
-            "text-grayscale-14 px-6 py-2 rounded text-lg font-medium ",
-            loading
-              ? "bg-grayscale-7 cursor-not-allowed"
-              : "bg-main-2 hover:bg-main-3 cursor-pointer"
+            "text-grayscale-14 px-6 py-2 rounded text-lg font-medium bg-main-2 hover:bg-main-3 cursor-pointer"
           )}
         >
           파일 업로드
