@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import CalendarView from "./_components/calendar-view";
-import { getCalendarEvents } from "@/app/_services/google";
+import { getCalendarEvents } from "@/app/_services/google/calendar";
 import useDialogStore from "@/app/_utils/dialog/store";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
 

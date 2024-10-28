@@ -109,7 +109,7 @@ export async function getDriveFiles(directoryId: string) {
   }
 
   return {
-    data: (data.files?.filter((file: DriveItem) => file) || []) as DriveItem[],
+    data: (data.files || []) as DriveItem[],
   };
 }
 

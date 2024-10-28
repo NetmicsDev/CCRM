@@ -1,4 +1,3 @@
-import { CalendarEvent } from "@/app/_models/calendar";
 import { DriveDirectory, DriveItem } from "@/app/_models/drive";
 import { create } from "zustand";
 

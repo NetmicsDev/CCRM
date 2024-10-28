@@ -6,7 +6,7 @@ import Icon from "../../Icon";
 import { SearchField } from "../../Text";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
 import { useCallback, useState } from "react";
-import { addCalendarEvent } from "@/app/_services/google";
+import { addCalendarEvent } from "@/app/_services/google/calendar";
 import TextLabel from "../../Text/label";
 import { CalendarEvent } from "@/app/_models/calendar";
 

@@ -5,7 +5,7 @@ import CalendarItem from "./calender-item";
 import Icon, { IconType } from "@/app/_components/Icon";
 import { apiRequest } from "@/app/_utils/axios/client";
 import useDialogStore from "@/app/_utils/dialog/store";
-import { getCalendarEvents } from "@/app/_services/google";
+import { getCalendarEvents } from "@/app/_services/google/calendar";
 import { CalendarEvent, scheduleStyle } from "@/app/_models/calendar";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
 import cn from "@/app/_utils/cn";
