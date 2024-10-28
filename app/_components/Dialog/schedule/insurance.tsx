@@ -4,7 +4,7 @@ import useDialogStore from "@/app/_utils/dialog/store";
 import PrimaryButton from "../../Button/button";
 import Icon from "../../Icon";
 import { SearchField } from "../../Text";
-import { addCalendarEvent } from "@/app/_services/google";
+import { addCalendarEvent } from "@/app/_services/google/calendar";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
 import { useCallback, useState } from "react";
 import TextLabel from "../../Text/label";

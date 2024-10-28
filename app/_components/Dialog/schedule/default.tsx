@@ -5,7 +5,7 @@ import PrimaryButton from "../../Button/button";
 import cn from "@/app/_utils/cn";
 import Icon, { IconType } from "../../Icon";
 import { CalendarEvent, scheduleStyle } from "@/app/_models/calendar";
-import { deleteCalendarEvent } from "@/app/_services/google";
+import { deleteCalendarEvent } from "@/app/_services/google/calendar";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
 import { useState } from "react";
 import { flushSync } from "react-dom";

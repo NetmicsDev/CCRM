@@ -5,7 +5,7 @@ import PrimaryButton from "../../Button/button";
 import Icon from "../../Icon";
 import { SearchField } from "../../Text";
 import { useCallback, useState } from "react";
-import { addCalendarEvent } from "@/app/_services/google";
+import { addCalendarEvent } from "@/app/_services/google/calendar";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
 import TextLabel from "../../Text/label";
 import { CalendarEvent } from "@/app/_models/calendar";

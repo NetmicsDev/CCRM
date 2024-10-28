@@ -1,47 +1,35 @@
 "use client";
 
 import PrimaryButton from "@/app/_components/Button/button";
-import { TextField } from "@/app/_components/Text";
-import Link from "next/link";
 import Icon from "@/app/_components/Icon";
-import useDialogStore from "@/app/_utils/dialog/store";
-import MemoEditor from "../_components/editor";
-import { useEffect, useState } from "react";
+import { TextField } from "@/app/_components/Text";
 import TextLabel from "@/app/_components/Text/label";
-import {
-  getMemoData,
-  updateMemoFile,
-  uploadMemoFile,
-} from "@/app/_services/google/memo";
+import { uploadMemoFile } from "@/app/_services/google/memo";
+import useDialogStore from "@/app/_utils/dialog/store";
+import { useMemoStore } from "@/app/_utils/memo/store";
+import { useState, useEffect } from "react";
+import MemoEditor from "../_components/editor";
 import { useRouter } from "next/navigation";
 
-export default function MemoEditPage({ params }: { params: { id: string } }) {
+export default function NewMemoPage() {
   const router = useRouter();
-  const openAlert = useDialogStore((state) => state.openAlert);
+  const { openAlert, openLoading, closeDialog } = useDialogStore();
+  const directoryId = useMemoStore((state) => state.directory?.id);
+  const loadDirectory = useMemoStore((state) => state.loadDirectory);
+  const addMemo = useMemoStore((state) => state.addMemo);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (params.id !== "new") {
-      const fetchMemo = async () => {
-        const { data, error } = await getMemoData(params.id);
-        if (error || !data) {
-          await openAlert({
-            title: "데이터 불러오기 실패",
-            description:
-              "해당 파일을 찾지 못했습니다. 목록 화면으로 이동합니다.",
-          });
-          router.replace("/program/memo");
-          return;
-        }
-        setTitle(data.title);
-        setContent(data.content);
-        setLoading(false);
+    if (!directoryId) {
+      const fetchDirectory = async () => {
+        openLoading("업무일지 드라이브 연동중...");
+        await loadDirectory();
+        closeDialog();
       };
-      fetchMemo();
+      fetchDirectory();
     }
-  }, [params.id]);
+  }, [directoryId]);
 
   const handleSave = async () => {
     if (!title) {
@@ -52,11 +40,13 @@ export default function MemoEditPage({ params }: { params: { id: string } }) {
       return;
     }
 
-    updateMemo();
+    addNewMemo();
   };
 
-  const updateMemo = async () => {
-    const { data, error } = await updateMemoFile(params.id, title, content);
+  const addNewMemo = async () => {
+    openLoading("업무일지를 저장하는 중입니다...");
+    const { data, error } = await uploadMemoFile(title, content, directoryId);
+    closeDialog();
     if (error || !data) {
       openAlert({
         title: "저장 실패",
@@ -65,6 +55,7 @@ export default function MemoEditPage({ params }: { params: { id: string } }) {
       return;
     }
 
+    addMemo(data);
     await openAlert({
       title: "저장 성공",
       description: "목록 화면으로 이동합니다",
@@ -101,11 +92,7 @@ export default function MemoEditPage({ params }: { params: { id: string } }) {
       </div>
       <TextLabel title="내용" className="mt-2" />
       <div className="flex-1 overflow-hidden">
-        {loading ? (
-          <div className="mx-auto mt-10 w-10 h-10 rounded-full border-4 border-t-transparent border-main-2 animate-spin"></div>
-        ) : (
-          <MemoEditor content={content || ""} onChange={setContent} />
-        )}{" "}
+        <MemoEditor onChange={setContent} />
       </div>
     </div>
   );

@@ -8,7 +8,10 @@ import TextLabel from "../../Text/label";
 import Select from "../../Select/select";
 import { FormEventHandler, useState } from "react";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
-import { addCalendarEvent, updateCalendarEvent } from "@/app/_services/google";
+import {
+  addCalendarEvent,
+  updateCalendarEvent,
+} from "@/app/_services/google/calendar";
 import { CalendarEvent } from "@/app/_models/calendar";
 import { flushSync } from "react-dom";
 import cn from "@/app/_utils/cn";
