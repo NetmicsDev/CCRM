@@ -67,7 +67,7 @@ export async function loadDatabaseFromDrive(): Promise<{
   }
 
   const uint8Array = await blobToUint8Array(data as Blob);
-  return { data: { id: data.id, data: uint8Array } };
+  return { data: { id: db.files[0].id, data: uint8Array } };
 }
 
 export async function uploadDatabaseToDrive(
@@ -130,12 +130,14 @@ export async function updateDatabaseToDrive(
   data: Uint8Array
 ): Promise<boolean> {
   // Uint8Array 데이터를 Blob으로 변환
-  const fileData = new Blob([data], { type: "application/x-sqlite3" });
-
-  // FormData 객체 생성하여 메타데이터와 파일 데이터 추가
   const formData = new FormData();
-  formData.append("file", fileData); // 파일 데이터 추가
-
+  formData.append(
+    "metadata",
+    new Blob([JSON.stringify({})], { type: "application/json" })
+  );
+  const fileData = new Blob([data], { type: "application/x-sqlite3" });
+  formData.append("file", fileData);
+  
   // Google Drive에 업로드 요청 (멀티 파트 업로드)
   const { data: result, error } = await googleRequest(
     `upload/drive/v3/files/${id}?uploadType=multipart`,

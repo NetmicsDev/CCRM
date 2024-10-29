@@ -6,19 +6,22 @@ import {
   updateDatabaseToDrive,
   uploadDatabaseToDrive,
 } from "@/app/_services/google/customer";
+import useDialogStore from "@/app/_utils/dialog/store";
 
 declare global {
   interface Window {
     sqliteDB?: Database;
+    sqliteDBId?: string;
     dbInitPromise?: Promise<Database>; // 데이터베이스 초기화 중인 Promise 저장
   }
 }
 
 // 데이터베이스 인스턴스를 전역적으로 관리하는 함수
 export async function getDatabase(): Promise<Database> {
+  const { openLoading, openAlert, closeDialog } = useDialogStore.getState();
+  
   // 데이터베이스가 이미 존재하면 즉시 반환
   if (window.sqliteDB) {
-    console.log("Using existing global database.");
     return window.sqliteDB;
   }
 
@@ -27,12 +30,39 @@ export async function getDatabase(): Promise<Database> {
     return window.dbInitPromise;
   }
 
-  window.dbInitPromise = initializeDatabase();
+  openLoading("데이터 베이스를 불러오는 중입니다...");
 
-  window.sqliteDB = await window.dbInitPromise;
-  window.dbInitPromise = undefined;
+  // db를 드라이브에서 가져온다.  
+  const {data, error} = await loadDatabaseFromDrive()
 
-  return window.sqliteDB;
+  if (error) { // 드라이드 로드 에러
+    //alert(error);
+    window.dbInitPromise = undefined;
+    closeDialog();
+    await openAlert({ title: "Error", description: error });
+    throw(error);
+  }
+  else if(data!.id === "NONE"){ //없을경우 생성
+    window.dbInitPromise = initializeDatabase();
+    window.sqliteDB = await window.dbInitPromise;
+    uploadDatabaseInner(window.sqliteDB);
+    window.dbInitPromise = undefined;
+    closeDialog();
+    return window.sqliteDB;
+  }
+  else{//있을 경우 DB 가져오기
+    const buffer = data!.data;
+    window.sqliteDB = await loadDatabaseFromFile(buffer);
+    window.sqliteDBId=data?.id;
+    window.dbInitPromise = undefined;
+    closeDialog();
+    return window.sqliteDB;
+  }
+}
+
+// 이름은 추후 네이밍 룰 수정
+function getDatabaseFileName(){
+  return "database.sqlite";
 }
 
 // 데이터베이스 초기화
@@ -41,46 +71,64 @@ async function initializeDatabase(): Promise<Database> {
     locateFile: (file) =>
       "https://minio-data.habartech.com/ccrm-dev/statics/sql-wasm.wasm",
   });
-
-  // ** 드라이브 결과값에 따라 초기값 세팅 분기
-  let db;
-  const { data, error } = await loadDatabaseFromDrive();
-  if (error || data!.id === "NONE") {
-    console.error(error);
-    db = new SQL.Database();
-    console.log("New database initialized and stored globally.");
-    await setupTables(db);
-  } else {
-    const { id, data: buffer } = data!;
-    db = new SQL.Database(buffer);
-    console.log("database initialized and stored globally from Drive");
-  }
+  const db = new SQL.Database();
+  //테이블 스키마 생성
+  await setupTables(db);
 
   return db;
 }
 
+//내부 DB를 드라이브로 업로드
+export async function uploadDatabaseInner(db:Database): Promise<void> {
+
+  //관리하는 sqliteDBId가 있을경우 업데이트
+  console.log(window.sqliteDBId);
+  if(window.sqliteDBId){
+    updateDatabaseToDrive(window.sqliteDBId, db.export());
+    
+  }
+  else{
+    //드라이브에 파일생성
+    const { data, error } = await uploadDatabaseToDrive(
+      db.export(),
+      getDatabaseFileName() 
+    );
+    if (error) { // 드라이브 업로드 에러
+      alert(error);
+      window.dbInitPromise = undefined;
+      throw(error);
+    }
+    window.sqliteDBId=data;
+  }
+}
+
+//CUD 마다 데이터베이스를 업데이트하는 데코레이터
+export function updateDatabase(
+  target: any,
+  propertyKey: string,
+  descriptor: PropertyDescriptor
+): void {
+  const originalMethod = descriptor.value;
+
+  descriptor.value = async function (...args: any[]) {
+    if (originalMethod) {
+      const result = await originalMethod.apply(this, args);
+
+      const db = await getDatabase();
+      uploadDatabaseInner(db);
+
+      return result;
+    }
+  };
+}
+
+//db 파일을 직접 다운 받을때(디버깅용)
 export async function downloadDatabase(): Promise<void> {
   const db = await getDatabase(); // 현재 데이터베이스 가져오기
 
   // 데이터베이스를 바이너리 형식으로 추출
   const binaryArray = db.export();
 
-  // ** 드라이브에 추가 **
-  // ** data는 추가한 파일의 ID
-  const { data, error } = await uploadDatabaseToDrive(
-    binaryArray,
-    "database.sqlite"
-  );
-  if (error || !data) {
-    console.error(error);
-  }
-  return;
-
-  // ** 드라이브에 업데이트 **
-  // ** DB_ID 필요, 응답은 boolean
-  // const isSuccess = await updateDatabaseToDrive(DB_ID, binaryArray);
-
-  // Blob으로 변환
   const blob = new Blob([binaryArray], { type: "application/octet-stream" });
 
   // 파일 다운로드 링크 생성
@@ -96,30 +144,16 @@ export async function downloadDatabase(): Promise<void> {
   document.body.removeChild(link);
 }
 
-export async function loadDatabaseFromFile(file: File): Promise<Database> {
+// 드라이브에서 가져온 데이터를 내부 DB로 만들때 사용
+// Uint8Array to Database
+export async function loadDatabaseFromFile(data: Uint8Array): Promise<Database> {
   const SQL = await initSqlJs({
     locateFile: (file) =>
       "https://minio-data.habartech.com/ccrm-dev/statics/sql-wasm.wasm",
   });
 
-  // ** 드라이브에서 꺼내올 때 사용 **
-  // ** data.id는 파일의 ID, data.data는 버퍼데이터
-  // ** data.id가 NONE이면 폴더는 있는데 파일이 없는 것
-  // const {data, error} = await loadDatabaseFromDrive()
-  // if (error || data!.id === "NONE") {
-  //   console.error(error)
-  //   // return null or undefined
-  // }
-  // const buffer = data!.data;
-
-  // 파일을 읽고 SQLite 데이터베이스로 변환
-  const arrayBuffer = await file.arrayBuffer();
-  const uint8Array = new Uint8Array(arrayBuffer);
-
-  const db = new SQL.Database(uint8Array); // 파일에서 SQLite DB 생성
+  const db = new SQL.Database(data); // 파일에서 SQLite DB 생성
   console.log("Database loaded from file and stored globally.");
-
-  window.sqliteDB = db; // 전역적으로 저장하여 이후에 사용할 수 있도록 함
 
   return db;
 }

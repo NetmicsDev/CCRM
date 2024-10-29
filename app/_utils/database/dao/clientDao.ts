@@ -1,5 +1,5 @@
 "use client";
-import { getDatabase } from "../getDatabase";
+import { getDatabase, updateDatabase } from "../getDatabase";
 import {
   generateInsertQuery,
   generateUpdateQuery,
@@ -10,6 +10,7 @@ import {
 import ClientModel from "@/app/_models/client";
 
 export class ClientDao {
+  @updateDatabase
   async insertClient(client: ClientModel): Promise<void> {
     const db = await getDatabase();
     const clientData = client.toJson();
@@ -19,6 +20,7 @@ export class ClientDao {
     db.run(query);
   }
 
+  @updateDatabase
   async updateClient(id: number, client: Partial<ClientModel>): Promise<void> {
     const db = await getDatabase();
     const updatedData = Object.keys(client).reduce((acc, key) => {
@@ -37,6 +39,7 @@ export class ClientDao {
     db.run(query);
   }
 
+  @updateDatabase
   async deleteClient(id: number): Promise<void> {
     const db = await getDatabase();
     const query = generateDeleteQuery("client", `id = ${id}`);
@@ -44,6 +47,7 @@ export class ClientDao {
   }
 
 
+  @updateDatabase
   async deleteClients(ids: number[]): Promise<void> {
     if (ids.length === 0) return;
   
@@ -53,6 +57,7 @@ export class ClientDao {
     db.run(query);
   }
 
+  @updateDatabase
   async deleteClientsTransaction(ids: number[]): Promise<void> {
     if (ids.length === 0) return;
     const db = await getDatabase();
@@ -167,3 +172,4 @@ export class ClientDao {
     return clientModel;
   }
 }
+

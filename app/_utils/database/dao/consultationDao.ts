@@ -1,5 +1,5 @@
 "use client";
-import { getDatabase } from "../getDatabase";
+import { getDatabase, updateDatabase } from "../getDatabase";
 import {
   generateInsertQuery,
   generateUpdateQuery,
@@ -10,6 +10,7 @@ import {
 import ConsultationModel from "@/app/_models/consultation";
 
 export class ConsultationDao {
+  @updateDatabase
   async insertConsultation(consultation: ConsultationModel): Promise<void> {
     const db = await getDatabase();
     const consultationData = consultation.toJson();
@@ -19,6 +20,7 @@ export class ConsultationDao {
     db.run(query);
   }
 
+  @updateDatabase
   async updateConsultation(id: number, consultation: Partial<ConsultationModel>): Promise<void> {
     const db = await getDatabase();
     const updatedData = Object.keys(consultation).reduce((acc, key) => {
@@ -37,6 +39,7 @@ export class ConsultationDao {
     db.run(query);
   }
 
+  @updateDatabase
   async deleteConsultation(id: number): Promise<void> {
     const db = await getDatabase();
     const query = generateDeleteQuery("consultation", `id = ${id}`);
