@@ -3,7 +3,8 @@
 import useDialogStore from "@/app/_utils/dialog/store";
 import SmsGroupSidebar from "./_components/group-sidebar";
 import SmsTable from "./_components/sms-table";
-import SmsGroupDialog from "@/app/_components/Dialog/sms/group";
+import GroupDialog from "@/app/_components/Dialog/group/group";
+import Link from "next/link";
 
 export default function SmsPage() {
   const openCustom = useDialogStore((state) => state.openCustom);
@@ -17,12 +18,12 @@ export default function SmsPage() {
         >
           아침독서 신청하기
         </div>
-        <div
+        <Link
+          href={"/program/group"}
           className="px-4 py-3 border border-sub-2 text-sub-2 cursor-pointer"
-          onClick={() => openCustom(<SmsGroupDialog />)}
         >
-          그룹 추가하기
-        </div>
+          그룹 관리
+        </Link>
       </div>
       <div className="flex gap-4 mt-6">
         <SmsGroupSidebar />

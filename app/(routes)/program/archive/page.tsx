@@ -9,7 +9,7 @@ import {
   uploadFile,
   uploadFolder,
 } from "@/app/_services/google/drive";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import DriveItemRow from "./_components/drive-item";
 import { useGoogleDriveStore } from "@/app/_utils/gdrive/store";
 import {
@@ -19,7 +19,6 @@ import {
   DRIVE_NAME_MEMO,
 } from "@/app/_constants/gdrive";
 import cn from "@/app/_utils/cn";
-import { flushSync } from "react-dom";
 import useDialogStore from "@/app/_utils/dialog/store";
 
 export default function ArchivePage() {
@@ -126,9 +125,11 @@ export default function ArchivePage() {
         <table className="w-full table-fixed ">
           <thead>
             <tr className="bg-grayscale-12">
-              <th className="text-left px-4 py-2 w-20">유형</th>
-              <th className="text-left">이름</th>
-              <th className="text-left w-48">수정 날짜</th>
+              <th className="text-left px-4 w-20"></th>
+              <th className="text-left py-2">이름</th>
+              <th className="text-left w-28">유형</th>
+              <th className="text-left w-32">크기</th>
+              <th className="text-left w-36">수정 날짜</th>
               <th className="text-left w-28"></th>
             </tr>
           </thead>
@@ -143,6 +144,8 @@ export default function ArchivePage() {
                     <Icon type={"down"} className="rotate-90" />
                   </td>
                   <td className="">상위 폴더로</td>
+                  <td className="">-</td>
+                  <td className="">-</td>
                   <td className="">-</td>
                   <td className="p-2"></td>
                 </tr>

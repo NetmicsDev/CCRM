@@ -1,6 +1,6 @@
 "use client";
 
-import SmsGroupDialog from "@/app/_components/Dialog/sms/group";
+import SmsGroupDialog from "@/app/_components/Dialog/group/group";
 import Dropdown from "@/app/_components/Dropdown";
 import Icon from "@/app/_components/Icon";
 import cn from "@/app/_utils/cn";
