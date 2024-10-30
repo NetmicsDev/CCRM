@@ -37,3 +37,4 @@ export { default as star } from "./star.svg";
 export { default as document } from "./document.svg";
 export { default as download } from "./download.svg";
 export { default as folderOpen } from "./folder-open.svg";
+export { default as more } from "./more.svg";

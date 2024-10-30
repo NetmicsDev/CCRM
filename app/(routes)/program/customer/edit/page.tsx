@@ -26,14 +26,14 @@ export default function CustomerEditPage() {
   const searchParams = useSearchParams();
   const clientIdParam = searchParams.get("id");
   const clientId = clientIdParam ? parseInt(clientIdParam) : -1;
-  
+
   const openAlert = useDialogStore((state) => state.openAlert);
-  
+
   const [formData, setFormData] = useState<Partial<ClientDTO> | null>(null);
 
   useEffect(() => {
-    if (!formData){
-      const clientDao = new ClientDao(); 
+    if (!formData) {
+      const clientDao = new ClientDao();
 
       //데이터가 이상하면 404
       if (!clientId || isNaN(clientId)) {
@@ -48,7 +48,7 @@ export default function CustomerEditPage() {
           if (!clientData) {
             router.push("/program/404");
           } else {
-            setFormData(clientData.toDTO()); 
+            setFormData(clientData.toDTO());
           }
         } catch (error) {
           console.error(error);
@@ -63,20 +63,18 @@ export default function CustomerEditPage() {
 
   const handleSave = async () => {
     console.log(formData);
-    if (clientId>=0 && formData) {
-      const clientDao = new ClientDao(); 
-      await clientDao.updateClient(clientId,ClientModel.fromDTO(formData));
+    if (clientId >= 0 && formData) {
+      const clientDao = new ClientDao();
+      await clientDao.updateClient(clientId, ClientModel.fromDTO(formData));
       console.log("저장:", formData);
-      
+
       await openAlert({
         title: "고객 정보 추가 완료",
         description: "고객 정보 관리 화면으로 이동합니다",
       });
 
       router.replace("/program/customer");
-
     }
-
   };
 
   if (!formData) {
@@ -96,22 +94,26 @@ export default function CustomerEditPage() {
       <div className="flex gap-4">
         <div className="flex flex-col gap-6 w-1/2">
           <h2 className="text-2xl font-medium">고객 기본 정보</h2>
-          <InfoForm onSubmit={null} formData={formData} setFormData={setFormData}  /> 
-          <FamilyForm formData={formData} setFormData={setFormData}  /> 
+          <InfoForm
+            onSubmit={null}
+            formData={formData}
+            setFormData={setFormData}
+          />
+          <FamilyForm formData={formData} setFormData={setFormData} />
         </div>
         <div className="flex flex-col gap-6 w-1/2">
           <h2 className="text-2xl font-medium">보험 및 기타정보</h2>
-          <AccountForm formData={formData} setFormData={setFormData}  /> 
-          <CustomerFileForm formData={formData} setFormData={setFormData}  /> 
-          <MemoForm formData={formData} setFormData={setFormData}  /> 
+          <AccountForm formData={formData} setFormData={setFormData} />
+          <CustomerFileForm formData={formData} setFormData={setFormData} />
+          <MemoForm formData={formData} setFormData={setFormData} />
           {/* 
           <h1 className="text-xl font-normal">보험정보</h1>
           <HospitalHistory />
           <InsuranceForm />
           */}
-          <CarForm formData={formData} setFormData={setFormData}  /> 
-          <FireForm formData={formData} setFormData={setFormData}  /> 
-          <WaiverForm formData={formData} setFormData={setFormData}  /> 
+          <CarForm formData={formData} setFormData={setFormData} />
+          <FireForm formData={formData} setFormData={setFormData} />
+          <WaiverForm formData={formData} setFormData={setFormData} />
         </div>
       </div>
     </div>
