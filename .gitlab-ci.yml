@@ -19,6 +19,8 @@ build:
   stage: build
   script:
     - docker build -t $IMAGE_NAME .
+  only:
+        - main
 
 # Step 2: Deploy (e.g., push to Docker Hub or deploy to server)
 deploy:
@@ -36,6 +38,8 @@ deploy:
       --restart always \
       --mount type=bind,source=$ENV_PATH,target=/app/.env \
       $IMAGE_NAME:$IMAGE_VERSION
+  only:
+        - main
 
 # Step 3: Cleanup old Docker images
 cleanup:
@@ -43,3 +47,5 @@ cleanup:
   script:
     # 사용되지 않는 Docker 이미지 정리
         - docker image prune -a -f --filter "until=24h"
+  only:
+        - main

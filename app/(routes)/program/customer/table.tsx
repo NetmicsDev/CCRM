@@ -1,9 +1,5 @@
 "use client"; 
 
-import React, { useEffect, useState, useRef } from "react";
-
-import { ClientDao } from "@utils/database/dao/clientDao";
-import { Select } from "@/app/_components/Select";
 import Link from "next/link";
 import ClientModel from "@/app/_models/client";
 

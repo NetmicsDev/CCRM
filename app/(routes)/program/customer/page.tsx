@@ -39,7 +39,6 @@ export default function CustomerRetrievePage() {
   };
 
   const setFilterClients = () => {
-    console.log("setFilterClients");
     //검색어 필터링
     const filteredClients = totalClients.filter(
       (client) =>
@@ -60,7 +59,7 @@ export default function CustomerRetrievePage() {
       .filter((client) => client.isDeleteChecked && client.id !== undefined)
       .map((client) => client.id as number);
     if (checkedClients && checkedClients.length >= 0) {
-      await clientDao.deleteClients(checkedClients);
+      await clientDao.deleteClientsTransaction(checkedClients);
       await setupDatabase();
     }
   };

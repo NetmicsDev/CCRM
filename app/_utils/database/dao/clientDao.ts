@@ -1,5 +1,5 @@
 "use client";
-import { getDatabase } from "../getDatabase";
+import { getDatabase, updateDatabase } from "../getDatabase";
 import {
   generateInsertQuery,
   generateUpdateQuery,
@@ -10,6 +10,7 @@ import {
 import ClientModel from "@/app/_models/client";
 
 export class ClientDao {
+  @updateDatabase
   async insertClient(client: ClientModel): Promise<void> {
     const db = await getDatabase();
     const clientData = client.toJson();
@@ -19,6 +20,7 @@ export class ClientDao {
     db.run(query);
   }
 
+  @updateDatabase
   async updateClient(id: number, client: Partial<ClientModel>): Promise<void> {
     const db = await getDatabase();
     const updatedData = Object.keys(client).reduce((acc, key) => {
@@ -37,11 +39,15 @@ export class ClientDao {
     db.run(query);
   }
 
+  @updateDatabase
   async deleteClient(id: number): Promise<void> {
     const db = await getDatabase();
     const query = generateDeleteQuery("client", `id = ${id}`);
     db.run(query);
   }
+
+
+  @updateDatabase
   async deleteClients(ids: number[]): Promise<void> {
     if (ids.length === 0) return;
   
@@ -50,6 +56,21 @@ export class ClientDao {
     const query = generateDeleteQuery("client", `id IN (${idList})`);
     db.run(query);
   }
+
+  @updateDatabase
+  async deleteClientsTransaction(ids: number[]): Promise<void> {
+    if (ids.length === 0) return;
+    const db = await getDatabase();
+    
+    const idList = ids.join(", ");
+    //해당 유저의 상담 목록도 지움
+    await db.exec('BEGIN TRANSACTION');
+    await db.run(generateDeleteQuery("client", `id IN (${idList})`));
+    await db.run(generateDeleteQuery("consultation", `clientId IN (${idList})`));
+    await db.exec('COMMIT');
+  }
+
+  
 
   async getClient(id: number): Promise<ClientModel | null> {
     const db = await getDatabase();
@@ -151,3 +172,4 @@ export class ClientDao {
     return clientModel;
   }
 }
+

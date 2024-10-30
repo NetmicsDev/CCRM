@@ -13,22 +13,106 @@ import PrimaryButton from "@/app/_components/Button/button";
 import { useRouter } from "next/navigation";
 import useDialogStore from "@/app/_utils/dialog/store";
 import { Address, useDaumPostcodePopup } from "react-daum-postcode";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ClientDao } from "@/app/_utils/database/dao/clientDao";
+import { ConsultationDao } from "@/app/_utils/database/dao/consultationDao";
+import ConsultationModel, { consultationContents, ConsultationDTO } from "@/app/_models/consultation";
+import ClientModel from "@/app/_models/client";
 
 export default function CounselPage() {
   const router = useRouter();
   const openPostcodePopup = useDaumPostcodePopup();
   const openAlert = useDialogStore((state) => state.openAlert);
 
-  const [mainAddress, setMainAddress] = useState<string>("");
+  const isExecuted = useRef(false); 
+  
+  const [formData, setFormData] = useState<Partial<ConsultationDTO>>({
+    content:0,
+    consultationTimeDetail:{
+      timePeriod:"am",
+      hour:1,
+      minute:0
+    },
+  });
+  const [clients, setClients] = useState<ClientModel[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const clientDao = new ClientDao();
+  const consultationDao = new ConsultationDao();
+
+  useEffect(() => {
+    if (!isExecuted.current) {
+      isExecuted.current = true;
+      setupDatabase().catch(console.error);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm]);
+
+  const setupDatabase = async () => {
+      const fetchedClients=await clientDao.getAllClients();
+      setClients(fetchedClients);
+  };
 
   const addCounsel = async () => {
+    //유효성검사
+    if(!formData.title||formData.title.trim() ===""){
+      await openAlert({
+        title: "상담 제목 없음",
+        description: "상담 제목을 입력해주세요",
+      });
+      return;
+    }
+    else if(!formData.clientId){
+      await openAlert({
+        title: "고객 정보 없음",
+        description: "고객 정보를 입력해주세요",
+      });
+      return;
+    }
+    else if(!formData.consultationTime||formData.consultationTime.trim() ===""){
+      await openAlert({
+        title: "상담 일자 없음",
+        description: "상담 일자를 입력해주세요",
+      });
+      return;
+    }
+
+    await consultationDao.insertConsultation(ConsultationModel.fromDTO(formData));
+
     await openAlert({
       title: "상담 등록 완료",
       description: "상담 현황 페이지로 이동합니다",
     });
     router.push("/program/counsel-list");
   };
+
+  const handleChange = (field: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const onClientSearch = (name:string) => {
+    const filteredClients = clients.filter(
+      (client) =>
+        client.name.includes(name) // 고객명
+      );
+    if(filteredClients.length>0){
+      const client= filteredClients[0]// 서칭된 첫 값으로 고정(추후 수정 필요)
+      //고객명을 받을때 입력
+      if(client){
+        formData.clientId=client.id;
+        formData.client = {
+          name:client.name,
+          contactNumber: {
+            part1: client.contactNumber?.split("-")[0] || "",
+            part2: client.contactNumber?.split("-")[1] || "",
+            part3: client.contactNumber?.split("-")[2] || "",
+          }};
+        setSearchTerm(client.name);
+        handleChange("client", { ...formData.client, name: client.name });
+      }
+    }
+  };
+  
 
   const handlePostcodeComplete = (data: Address) => {
     let fullAddress = data.address; // e.g. '서울 성동구 왕십리로2길 20 (성수동1가)'
@@ -44,7 +128,7 @@ export default function CounselPage() {
       }
       fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
     }
-    setMainAddress(fullAddress);
+    handleChange("consultationAddress", fullAddress);
   };
 
   return (
@@ -55,11 +139,24 @@ export default function CounselPage() {
           <h2 className="text-2xl font-normal">고객정보 / 상담내용</h2>
           <div className="flex flex-col gap-4 px-6 py-4 bg-grayscale-13">
             <div>
+              <TextLabel title="상담 제목" />
+              <Input
+                type="text"
+                placeholder="상담 제목"
+                required
+                className="mt-2"
+                value={formData.title||""}
+                onChange={(e) => handleChange("title", e.target.value)}
+              />
+            </div>
+            <div>
               <TextLabel title="고객명" />
               <SearchField
                 placeholder="회원명을 입력하시면 자동으로 검색이 됩니다"
-                onSearch={() => {}}
+                onSearch={()=>onClientSearch(searchTerm)}
                 className="mt-2"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div>
@@ -73,7 +170,9 @@ export default function CounselPage() {
                     placeholder="010"
                     maxLength={4}
                     className="w-44"
+                    value={formData.client?.contactNumber?.part1||""}
                     required
+                    onChange={() =>{}}
                   />
                 </div>
                 <span>-</span>
@@ -85,7 +184,9 @@ export default function CounselPage() {
                     placeholder=""
                     maxLength={4}
                     className="w-44"
+                    value={formData.client?.contactNumber?.part2||""}
                     required
+                    onChange={() =>{}}
                   />
                 </div>
                 <span>-</span>
@@ -97,7 +198,9 @@ export default function CounselPage() {
                     placeholder=""
                     maxLength={4}
                     className="w-44"
+                    value={formData.client?.contactNumber?.part3||""}
                     required
+                    onChange={() =>{}}
                   />
                 </div>
               </div>
@@ -105,19 +208,16 @@ export default function CounselPage() {
             <SelectField
               title="상담 내용"
               placeholder="선택해주세요"
-              options={[
-                { value: 0, text: "아이디 저장" },
-                { value: 1, text: "정보 수집" },
-                { value: 2, text: "상품 제안" },
-                { value: 3, text: "계약 체결" },
-                { value: 4, text: "증권 전달" },
-                { value: 5, text: "기타" },
-              ]}
+              options={consultationContents}
+              value={formData.content||0}
+              onChange={(e) => handleChange("content", e.target.value)}
             />
             <TextArea
               label="자세한 상담내용"
               placeholder="자세한 상담내용 입력"
               className="h-32"
+              value={formData.detailedContent||""}
+              onChange={(e) => handleChange("detailedContent", e.target.value)}
             />
             <div className="flex gap-4">
               <ColorButton
@@ -134,7 +234,12 @@ export default function CounselPage() {
           <h2 className="text-2xl font-normal">상세 상담 정보</h2>
           <div className="flex flex-col gap-4 px-6 py-4 bg-grayscale-13">
             <div>
-              <TextField title="상담 일" type="date" />
+              <TextField 
+                title="상담 일" 
+                type="date" 
+                value={formData.consultationTime||""}
+                onChange={(e) => handleChange("consultationTime", e.target.value)}
+              />
             </div>
             <div>
               <TextLabel title="상담 시간" />
@@ -146,6 +251,8 @@ export default function CounselPage() {
                       { value: "pm", text: "오후" },
                     ]}
                     className="h-12 py-2"
+                    value={formData.consultationTimeDetail?.timePeriod||"am"}
+                    onChange={(e) => handleChange("consultationTimeDetail", { ...formData.consultationTimeDetail, timePeriod: e.target.value })}
                   />
                 </div>
                 <div className="flex-1">
@@ -155,6 +262,8 @@ export default function CounselPage() {
                       text: `${i + 1}시`,
                     }))}
                     className="h-12 py-2"
+                    value={formData.consultationTimeDetail?.hour||1}
+                    onChange={(e) => handleChange("consultationTimeDetail", { ...formData.consultationTimeDetail, hour: e.target.value })}
                   />
                 </div>
                 <div className="flex-1">
@@ -164,6 +273,8 @@ export default function CounselPage() {
                       text: `${i}분`,
                     }))}
                     className="h-12 py-2"
+                    value={formData.consultationTimeDetail?.minute||0}
+                    onChange={(e) => handleChange("consultationTimeDetail", { ...formData.consultationTimeDetail, minute: e.target.value })}
                   />
                 </div>
               </div>
@@ -174,7 +285,7 @@ export default function CounselPage() {
                 title="상담 장소"
                 name="mb_addr1"
                 placeholder="주소 검색"
-                value={mainAddress}
+                value={formData.consultationAddress||""}
                 readOnly
                 onClick={() =>
                   openPostcodePopup({ onComplete: handlePostcodeComplete })
@@ -186,6 +297,8 @@ export default function CounselPage() {
                 placeholder="나머지 주소 입력"
                 required
                 className="mt-2"
+                value={formData.consultationAddressDetail||""}
+                onChange={(e) => handleChange("consultationAddressDetail", e.target.value)}
               />
             </div>
           </div>
