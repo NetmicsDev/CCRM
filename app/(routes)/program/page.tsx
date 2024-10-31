@@ -30,7 +30,7 @@ export default function ProgramPage() {
       icon: "/images/program/menu/insurance.png",
     },
     {
-      name: "업무일지",
+      name: "메모/기록",
       href: "/program/memo",
       icon: "/images/program/menu/memo.png",
     },

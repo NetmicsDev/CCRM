@@ -18,7 +18,7 @@ export default function MemoPage() {
   useEffect(() => {
     if (directory) return;
     const fetchData = async () => {
-      openLoading("업무일지를 받아오는 중입니다...");
+      openLoading("메모/기록을 받아오는 중입니다...");
       await loadDirectory();
       closeDialog();
     };
@@ -27,7 +27,7 @@ export default function MemoPage() {
 
   return (
     <div className="flex flex-col w-full max-w-screen-lg mx-auto my-10">
-      <h1 className="text-3xl font-normal">업무 일지</h1>
+      <h1 className="text-3xl font-normal">메모/기록</h1>
       <div className="flex my-6 justify-end">
         <Link
           href="/program/memo/new"

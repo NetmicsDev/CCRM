@@ -1,16 +1,21 @@
 "use client";
 
+import Icon from "@/app/_components/Icon";
 import Pagination from "@/app/_components/Pagination";
 import ClientModel from "@/app/_models/client";
 import ConsultationModel from "@/app/_models/consultation";
+import cn from "@/app/_utils/cn";
 import Link from "next/link";
 
 export default function CounselTable({
   consultations,
+  orderBy,
+  setOrderBy,
 }: {
   consultations: ConsultationModel[];
+  orderBy?: string;
+  setOrderBy: (orderBy: string) => void;
 }) {
-
   return (
     <div className="flex flex-col">
       <table className="w-full mt-4">
@@ -28,19 +33,36 @@ export default function CounselTable({
               <input type="checkbox" />
             </td>
             <td className="font-medium">고객명</td>
-            <td>상담 일자</td>
+            <td>
+              <div
+                className="inline-flex items-center gap-2 rounded hover:bg-grayscale-11 px-2 py-1"
+                onClick={() => setOrderBy(orderBy === "asc" ? "desc" : "asc")}
+              >
+                <span>상담 일자</span>
+                <Icon
+                  type="down"
+                  className={cn(
+                    "w-4 h-4",
+                    orderBy === "asc" ? "rotate-180" : ""
+                  )}
+                  onClick={() => setOrderBy(orderBy === "asc" ? "desc" : "asc")}
+                />
+              </div>
+            </td>
             <td className="px-2">상담 제목</td>
             <td>상담 진행</td>
             <td>내용</td>
           </tr>
         </thead>
         <tbody>
-          {(consultations||[]).map((consultation:ConsultationModel) => (
+          {(consultations || []).map((consultation: ConsultationModel) => (
             <tr key={consultation.id} className="border-b border-grayscale-11">
               <td className="px-4">
                 <input type="checkbox" />
               </td>
-              <td className="font-medium">{consultation.client?.name||"-"}</td>
+              <td className="font-medium">
+                {consultation.client?.name || "-"}
+              </td>
               <td>{consultation.consultationTime}</td>
               <td className="px-2">
                 <p className="overflow-hidden line-clamp-1">
@@ -48,7 +70,7 @@ export default function CounselTable({
                 </p>
               </td>
               <td className="py-3">
-                {consultation.isPastConsultation() ? (// 상담 완료 여부 판단
+                {consultation.isPastConsultation() ? ( // 상담 완료 여부 판단
                   <div className="inline-flex px-2 py-1 rounded bg-grayscale-12 text-grayscale-6 text-sm font-medium">
                     상담 완료
                   </div>

@@ -81,7 +81,7 @@ export default function ProgramNav() {
             },
           ]}
         />
-        <ProgramNavItem icon="memo" title="업무 일지" href="/program/memo" />
+        <ProgramNavItem icon="memo" title="메모/기록" href="/program/memo" />
         <ProgramNavItem icon="archive" title="자료실" href="/program/archive" />
       </div>
     </nav>

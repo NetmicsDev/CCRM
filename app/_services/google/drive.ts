@@ -196,3 +196,18 @@ export async function deleteDriveFile(fileId: string) {
 
   return !error;
 }
+
+export async function getDriveUsage() {
+  const { data, error } = await googleRequest("/drive/v3/about", {
+    method: "GET",
+    params: {
+      fields: "storageQuota",
+    },
+  });
+
+  if (error) {
+    return { error };
+  }
+
+  return { data };
+}

@@ -1,8 +1,7 @@
 import ClientModel, { ClientDTO } from "./client";
 
-
-export const consultationContents =[
-  { value: 0, text: "아이디 저장" },
+export const consultationContents = [
+  { value: 0, text: "조회 상담" },
   { value: 1, text: "정보 수집" },
   { value: 2, text: "상품 제안" },
   { value: 3, text: "계약 체결" },
@@ -56,7 +55,7 @@ export default class ConsultationModel {
     updatedAt: string,
     detailedContent?: string,
     consultationAddress?: string,
-    consultationAddressDetail?: string,
+    consultationAddressDetail?: string
   ) {
     this.id = id;
     this.clientId = clientId;
@@ -71,28 +70,26 @@ export default class ConsultationModel {
     this.updatedAt = updatedAt;
   }
 
-
   isPastConsultation(): boolean {
     const consultationDate = new Date(this.consultationTime);
 
     // TimeDetail이 존재하는 경우 시간과 분을 반영
     if (this.consultationTimeDetail) {
       const timeDetail: TimeDetail = JSON.parse(this.consultationTimeDetail);
-      
+
       let hour = timeDetail.hour;
       if (timeDetail.timePeriod.toLowerCase() === "pm" && hour < 12) {
         hour += 12;
       } else if (timeDetail.timePeriod.toLowerCase() === "am" && hour === 12) {
         hour = 0; // 자정
       }
-      
+
       consultationDate.setHours(hour, timeDetail.minute, 0, 0);
     }
 
     const currentDate = new Date();
     return consultationDate < currentDate;
   }
-
 
   static fromJson(data: any): ConsultationModel {
     return new ConsultationModel(
@@ -106,7 +103,7 @@ export default class ConsultationModel {
       data.updatedAt,
       data.detailedContent,
       data.consultationAddress,
-      data.consultationAddressDetail,
+      data.consultationAddressDetail
     );
   }
 
