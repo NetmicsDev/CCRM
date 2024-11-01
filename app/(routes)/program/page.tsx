@@ -21,7 +21,7 @@ export default function ProgramPage() {
     },
     {
       name: "메시지 발송",
-      href: "/program/message/kakao",
+      href: "/program/message",
       icon: "/images/program/menu/message.png",
     },
     {

@@ -20,7 +20,7 @@ const colors = {
   "sub-2": {
     border: "border-sub-2",
     text: "text-sub-2",
-    icon: "fill-sub-2 stroke-sub-2",
+    icon: "fill-sub-2",
   },
   "sub-3": {
     border: "border-sub-3",
