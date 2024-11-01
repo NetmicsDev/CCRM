@@ -29,6 +29,7 @@ export default function CounselListPage() {
   const [sortOrder, setSortOrder] = useState<string>("asc");
   const pageNum: number = Number(searchParams.get("page") ?? "1");
   const [countPerPage, setCountPerPage] = useState<number>(10);
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
 
   const clientDao = new ClientDao();
   const consultationDao = new ConsultationDao();
@@ -42,7 +43,7 @@ export default function CounselListPage() {
       setupDatabase().catch(console.error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalConsultations, searchTerm, sortOrder, countPerPage, pageNum]);
+  }, [totalConsultations, searchTerm, sortOrder, countPerPage, pageNum,statusFilter]);
 
   const setupDatabase = async () => {
     const fetchedClients = await clientDao.getAllClients();
@@ -60,12 +61,22 @@ export default function CounselListPage() {
 
   const filterConsultations = () => {
     //검색어 필터링
-    const filteredConsultations = totalConsultations.filter(
+    let filteredConsultations = totalConsultations.filter(
       (consultation) =>
         consultation.title.includes(searchTerm) || // 상담 제목
         consultation.client?.name.includes(searchTerm) // 고객명
     );
+    //상태 필터링
+    console.log(statusFilter)
+    if(statusFilter!=="ALL"){
+      filteredConsultations = filteredConsultations.filter(
+        (consultation) =>
+          consultation.consultationStatus===statusFilter // 고객명
+      );
+    }
+
     setFilteredConsultations(filteredConsultations);
+    
 
     //정렬 - 상담 일자 기준
     const sortedConsultations = [...filteredConsultations].sort((a, b) => {
@@ -89,7 +100,13 @@ export default function CounselListPage() {
     const month = i + 1;
     const monthString = `${currentYear}-${String(month).padStart(2, "0")}`;
 
-    const count = filteredConsultations.filter((consultation) =>
+    //상담 현황은 완료된 상담만 수집
+    const completedConsultations= totalConsultations.filter(
+      (consultation) =>
+        consultation.consultationStatus==="COMPLETED" // 고객명
+    );
+
+    const count = completedConsultations.filter((consultation) =>
       consultation.consultationTime.startsWith(monthString)
     ).length;
 
@@ -117,10 +134,13 @@ export default function CounselListPage() {
               <Select
                 id="isFinished"
                 options={[
-                  { text: "전체", value: "all" },
-                  { text: "상담 예정", value: "false" },
-                  { text: "상담 완료", value: "true" },
+                  { text: "전체", value: "ALL" },
+                  { text: "상담 예정", value: "SCHEDULED" },
+                  { text: "상담 완료", value: "COMPLETED" },
                 ]}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  setStatusFilter(e.target.value);
+                }}
                 className="w-40 h-10 ml-2 py-1.5 px-3"
               />
               {/* <Select

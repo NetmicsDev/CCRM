@@ -1,3 +1,5 @@
+"use client";
+
 import useDialogStore from "@/app/_utils/dialog/store";
 import PrimaryButton from "../../Button/button";
 import { Input, SearchField, TextField } from "../../Text";
@@ -18,7 +20,7 @@ export default function GroupDialog({ groupName }: { groupName?: string }) {
       <div className="px-6">
         <Input
           placeholder="그룹 이름"
-          value={inputValue}
+          value={inputValue||""}
           onChange={(e) => setInputValue(e.target.value)}
         />
       </div>
@@ -27,7 +29,7 @@ export default function GroupDialog({ groupName }: { groupName?: string }) {
           title="취소"
           color="gray"
           className="w-20 h-10 rounded text-base"
-          onClick={closeDialog}
+          onClick={() => closeDialog(null)}
         />
         <PrimaryButton
           title="저장"

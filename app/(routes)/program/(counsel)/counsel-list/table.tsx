@@ -70,7 +70,7 @@ export default function CounselTable({
                 </p>
               </td>
               <td className="py-3">
-                {consultation.isPastConsultation() ? ( // 상담 완료 여부 판단
+                {consultation.consultationStatus==="COMPLETED"? ( // 상담 완료 여부 판단
                   <div className="inline-flex px-2 py-1 rounded bg-grayscale-12 text-grayscale-6 text-sm font-medium">
                     상담 완료
                   </div>

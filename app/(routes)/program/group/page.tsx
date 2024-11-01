@@ -6,72 +6,147 @@ import GroupMemberDialog from "@/app/_components/Dialog/group/member";
 import Dropdown from "@/app/_components/Dropdown";
 import Icon from "@/app/_components/Icon";
 import { Input, SearchField } from "@/app/_components/Text";
+import { ClientDTO } from "@/app/_models/client";
+import ManagementGroupModel, { ManagementGroupDTO } from "@/app/_models/managementGroup";
 import cn from "@/app/_utils/cn";
+import { ClientManagementGroupDao } from "@/app/_utils/database/dao/clientManagementGroupDao";
+import { ManagementGroupDao } from "@/app/_utils/database/dao/managementGroupDao";
 import useDialogStore from "@/app/_utils/dialog/store";
-import { useState } from "react";
-
-const mockGroupData = [
-  {
-    id: "1",
-    name: "그룹 1",
-    customers: 2,
-  },
-  {
-    id: "2",
-    name: "판교헬스 동호회",
-    customers: 3,
-  },
-  {
-    id: "3",
-    name: "그룹 3",
-    customers: 6,
-  },
-];
+import { useEffect, useState } from "react";
 
 export default function GroupManagementPage() {
   const openCustom = useDialogStore((state) => state.openCustom);
-  const [groupData, setGroupData] = useState(mockGroupData);
-  const [selectedGroup, setSelectedGroup] = useState<any>();
+  const [groupData, setGroupData] = useState<Partial<ManagementGroupDTO>[] | null>(null); 
+  const [selectedGroup, setSelectedGroup] = useState<Partial<ManagementGroupDTO> | null>(null); 
+  const [selectedClients, setSelectedClients] = useState<Partial<ClientDTO[]> | null>(null); 
+  const [filteredClients, setFilteredClients] = useState<Partial<ClientDTO[]> | null>(null); 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const managementGroupDao = new ManagementGroupDao(); 
+  const clientManagementGroupDao = new ClientManagementGroupDao(); 
+  
+  useEffect(() => {
+    if (!groupData){
+      setupGroupData();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupData,selectedGroup,filteredClients ]);
+
+
+  const setupGroupData = async () => {
+    try {
+      const managementGroups = await managementGroupDao.getAllManagementGroups();
+      // const managementGroupDTOs = await Promise.all(
+      //   managementGroups.map(async (group) => ({
+      //     ...group.toDTO(),
+      //     clients: (await group.getClients()).map(client => {
+      //       return {
+      //         ...client.toDTO(),//클라이언트 아이디를 각각 가져온다.
+      //         id:client.id
+      //       }
+      //     })
+      //   }))
+      // );
+      const managementGroupDTOs = managementGroups.map(group => group.toDTO());
+      setGroupData(managementGroupDTOs);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const addGroup = async () => {
     const groupName = await openCustom<string | undefined>(<GroupDialog />);
     if (!groupName) return;
 
-    setGroupData([
-      ...groupData,
-      { id: String(groupData.length + 1), name: groupName, customers: 0 },
-    ]);
+    await managementGroupDao.insertManagementGroup(ManagementGroupModel.fromDTO({
+      groupName:groupName
+    }));
+    setupGroupData();
   };
 
   const editGroupName = async () => {
     const newName = await openCustom<string | undefined>(
-      <GroupDialog groupName={selectedGroup.name} />
+      <GroupDialog groupName={selectedGroup?.groupName||""} />
     );
     if (!newName) return;
-
-    setGroupData(
-      groupData.map((item) =>
-        item.id === selectedGroup.id ? { ...item, name: newName } : item
-      )
-    );
-    setSelectedGroup({ ...selectedGroup, name: newName });
+    if(selectedGroup){
+      selectedGroup.groupName=newName;
+      await managementGroupDao.updateManagementGroup(selectedGroup.id||-1,ManagementGroupModel.fromDTO(selectedGroup));
+      setupGroupData();
+    }
   };
 
-  const deleteGroup = () => {
-    setGroupData(groupData.filter((item) => item.id !== selectedGroup.id));
-    setSelectedGroup(undefined);
+  const deleteGroup = async () => {
+    if(selectedGroup){
+      await managementGroupDao.deleteManagementGroupTransaction(selectedGroup.id||-1);
+      setupGroupData();
+      setSelectedGroup(null);
+    }
   };
 
   const addCustomer = async () => {
-    const result = await openCustom(<GroupMemberDialog />);
+    const result : ClientDTO[]|undefined = await openCustom(<GroupMemberDialog />);
     if (!result) return;
+    //고객의 아이디 목록을 뽑아서 추가
+    if(selectedGroup){
+      const clientIds = result.map(client => (client.id||-1));
+      await clientManagementGroupDao.addClientsToManagementGroup(selectedGroup?.id||-1,clientIds);
+
+      // 수정된 그룹만 다시 조회
+      const clientModelList=await ManagementGroupModel.fromDTO(selectedGroup).getClients();
+      const clientData=clientModelList.map(client => {
+        return {
+          ...client.toDTO(),//클라이언트 아이디를 각각 가져온다.
+          id:client.id
+        }
+      })
+      setSelectedClients(clientData);
+      setFilteredClients(clientData);
+      setSelectedGroup(selectedGroup);
+    }
   };
 
-  const deleteCustomer = () => {
-    setSelectedGroup({
-      ...selectedGroup,
-      customers: selectedGroup.customers - 1,
-    });
+  const deleteCustomer = async (id:number) => {
+    if(id>=0 && selectedGroup){
+      await clientManagementGroupDao.removeClientsFromManagementGroup(selectedGroup?.id||-1,[id]);
+
+      // 수정된 그룹만 다시 조회
+      const clientModelList=await ManagementGroupModel.fromDTO(selectedGroup).getClients();
+      const clientData=clientModelList.map(client => {
+        return {
+          ...client.toDTO(),//클라이언트 아이디를 각각 가져온다.
+          id:client.id
+        }
+      })
+      setSelectedClients(clientData);
+      setFilteredClients(clientData);
+      setSelectedGroup(selectedGroup);
+    }
+  };
+
+  //그룹 선택
+  const selectGroup = async (group:Partial<ManagementGroupDTO>) => {
+    setSelectedGroup(group);
+    const clientModelList=await ManagementGroupModel.fromDTO(group).getClients();
+    const clientData=clientModelList.map(client => {
+      return {
+        ...client.toDTO(),//클라이언트 아이디를 각각 가져온다.
+        id:client.id
+      }
+    })
+    setSelectedClients(clientData);
+    setFilteredClients(clientData);
+  };
+
+  //서칭(고객)
+  const handleSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm); 
+    if (selectedClients) {
+      const filteredData = selectedClients.filter((client) =>
+        client?.name?.includes(searchTerm)
+      );
+      setFilteredClients(filteredData); 
+    }
   };
 
   return (
@@ -86,8 +161,8 @@ export default function GroupManagementPage() {
             onClick={addGroup}
           />
           <ul className="mt-2">
-            {groupData.map((item, i) => (
-              <li key={i}>
+            {(groupData||[]).map((item) => (
+              <li key={item.id}>
                 <div
                   className={cn(
                     "px-4 py-3 rounded hover:bg-grayscale-12 truncate cursor-pointer",
@@ -96,10 +171,10 @@ export default function GroupManagementPage() {
                       : "font-normal"
                   )}
                   onClick={() =>
-                    selectedGroup?.id !== item.id && setSelectedGroup(item)
+                    selectedGroup?.id !== item.id && selectGroup(item)
                   }
                 >
-                  {item.name}
+                  {item.groupName}
                 </div>
               </li>
             ))}
@@ -113,9 +188,9 @@ export default function GroupManagementPage() {
               <div className="flex items-center gap-4">
                 <div className="flex-1 ">
                   <h2 className="text-2xl font-medium">
-                    {selectedGroup.name}
+                    {selectedGroup.groupName}
                     <span className="ml-2 text-grayscale-6 text-xl font-normal">
-                      ({selectedGroup.customers}명)
+                      ({selectedClients?.length||0}명)
                     </span>
                   </h2>
                 </div>
@@ -136,7 +211,7 @@ export default function GroupManagementPage() {
                 <div className="flex-1">
                   <SearchField
                     placeholder="고객명을 검색하세요"
-                    onSearch={() => {}}
+                    onSearch={handleSearch}
                   />
                 </div>
                 <PrimaryButton
@@ -147,16 +222,16 @@ export default function GroupManagementPage() {
                 />
               </div>
               <ul className="text-lg font-normal">
-                {Array.from({ length: selectedGroup.customers }).map((_, i) => (
+                {(filteredClients||[]).map((item) => (
                   <li
-                    key={i}
+                    key={item?.id}
                     className="w-full p-3 rounded hover:bg-grayscale-12 justify-between flex items-center"
                   >
-                    <span>고객 {i + 1}</span>
+                    <span>{item?.name}</span>
                     <Icon
                       type="delete"
                       className="w-10 h-10 p-2 rounded hover:bg-sub-1 hover:bg-opacity-10 hover:fill-sub-1 cursor-pointer"
-                      onClick={deleteCustomer}
+                      onClick={() => {deleteCustomer(item?.id||-1);}}
                     />
                   </li>
                 ))}
