@@ -1,10 +1,6 @@
 import { ClientManagementGroupDao } from "../_utils/database/dao/clientManagementGroupDao";
 import ManagementGroupModel from "./managementGroup";
 
-export const occupations = [
-    { value: "1", text: "일1" },
-    { value: "2", text: "일2" },
-];
   
 export const interests = [
     { value: "투자", text: "투자 (주식/펀드)" },
@@ -165,6 +161,8 @@ export type ClientDTO = Partial<{
   anniversary: Anniversary[];
   bankAccountInfo: Account[];
   notes: string;
+  hospitalRecord: string;
+  insuranceRecord: string;
   autoInsuranceExpiration: AutoInsurance[];
   fireInsuranceExpiration: FireInsurance[];
   exemptionReductionEndDate: ExemptionReductionEndDate[];
@@ -332,6 +330,8 @@ export default class ClientModel {
         anniversary: this.anniversary ? JSON.parse(this.anniversary) : [],
         bankAccountInfo: this.bankAccountInfo ? JSON.parse(this.bankAccountInfo) : [],
         notes: this.notes || "",
+        hospitalRecord: this.hospitalRecord || "",
+        insuranceRecord: this.insuranceRecord || "",
         autoInsuranceExpiration: this.autoInsuranceExpiration
           ? JSON.parse(this.autoInsuranceExpiration)
           : [],
@@ -363,8 +363,8 @@ export default class ClientModel {
         JSON.stringify(dto.anniversary || []),
         JSON.stringify(dto.bankAccountInfo || []),
         dto.notes || "",
-        undefined,
-        undefined,
+        dto.hospitalRecord || "",
+        dto.insuranceRecord || "",
         JSON.stringify(dto.autoInsuranceExpiration || []),
         JSON.stringify(dto.fireInsuranceExpiration || []),
         JSON.stringify(dto.exemptionReductionEndDate || []),

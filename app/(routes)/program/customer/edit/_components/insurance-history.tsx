@@ -1,11 +1,24 @@
 "use client";
 
 import Icon from "@/app/_components/Icon";
+import { ClientDTO } from "@/app/_models/client";
 import { useState } from "react";
 
-export default function InsuranceHistory() {
-  const [history, setHistory] = useState<string>("");
+export default function InsuranceHistory({
+  formData, 
+  setFormData,
+}: {
+  formData: Partial<ClientDTO> | null;
+  setFormData: React.Dispatch<React.SetStateAction<Partial<ClientDTO> | null>>;
+}) {
+  const handleInsuranceRecordChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
 
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      insuranceRecord: value, 
+    }));
+  };
   return (
     <div className="flex flex-col bg-grayscale-13 p-4 rounded-sm gap-2">
       <div className="flex items-center font-medium text-grayscale-5 gap-2">
@@ -15,8 +28,8 @@ export default function InsuranceHistory() {
       <textarea
         placeholder="보험 내역 메모"
         className="h-32 p-4 border border-grayscale-11 rounded-sm resize-none"
-        value={history}
-        onChange={(e) => setHistory(e.target.value)}
+        value={formData?.insuranceRecord || ""} 
+        onChange={handleInsuranceRecordChange} 
       />
     </div>
   );

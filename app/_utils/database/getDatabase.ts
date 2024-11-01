@@ -97,7 +97,6 @@ async function initializeDatabase(): Promise<Database> {
 //내부 DB를 드라이브로 업로드
 export async function uploadDatabaseInner(db:Database): Promise<void> {
   //관리하는 sqliteDBId가 있을경우 업데이트
-  console.log(window.sqliteDBId);
   if(window.sqliteDBId){
     updateDatabaseToDrive(window.sqliteDBId, db.export());
     

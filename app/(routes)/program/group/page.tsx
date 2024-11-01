@@ -88,7 +88,6 @@ export default function GroupManagementPage() {
     const result : ClientDTO[]|undefined = await openCustom(<GroupMemberDialog />);
     if (!result) return;
     //고객의 아이디 목록을 뽑아서 추가
-    console.log(result)
     if(selectedGroup){
       const clientIds = result.map(client => (client.id||-1));
       await clientManagementGroupDao.addClientsToManagementGroup(selectedGroup?.id||-1,clientIds);

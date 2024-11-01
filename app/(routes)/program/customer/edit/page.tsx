@@ -43,10 +43,12 @@ export default function CustomerEditPage() {
       const fetchData = async () => {
         try {
           const clientData = await clientDao.getClient(clientId);
-          console.log(clientData);
           if (!clientData) {
             router.push("/program/404");
           } else {
+            
+            console.log(clientData)
+            console.log(clientData.toDTO())
             setFormData(clientData.toDTO());
           }
         } catch (error) {
@@ -57,16 +59,12 @@ export default function CustomerEditPage() {
 
       fetchData();
     }
-    console.log(formData);
   }, [searchParams, router, formData, clientId]);
 
   const handleSave = async () => {
-    console.log(formData);
     if (clientId >= 0 && formData) {
       const clientDao = new ClientDao();
       await clientDao.updateClient(clientId, ClientModel.fromDTO(formData));
-      console.log("저장:", formData);
-
       await openAlert({
         title: "고객 정보 추가 완료",
         description: "고객 정보 관리 화면으로 이동합니다",
@@ -106,8 +104,8 @@ export default function CustomerEditPage() {
           <AccountForm formData={formData} setFormData={setFormData} />
           <CustomerFileForm formData={formData} setFormData={setFormData} />
 
-          <HospitalHistory />
-          <InsuranceHistory />
+          <HospitalHistory formData={formData} setFormData={setFormData} />
+          <InsuranceHistory formData={formData} setFormData={setFormData} />
           <CarForm formData={formData} setFormData={setFormData} />
           <FireForm formData={formData} setFormData={setFormData} />
           <WaiverForm formData={formData} setFormData={setFormData} />

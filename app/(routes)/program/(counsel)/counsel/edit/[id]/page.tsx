@@ -72,7 +72,6 @@ export default function CounselEditPage({
               await consultationDao.getConsultationsByClientId(
                 consultationData.clientId
               );
-            console.log(consultations);
             setConsultations(consultations);
           }
         } catch (error) {
@@ -140,9 +139,7 @@ export default function CounselEditPage({
   };
 
   const handleEditConsultation = (consultationId: number) => {
-    console.log(consultations);
     const consultation = consultations.find((c) => c.id === consultationId);
-    console.log(consultation);
     if (consultation) {
       // URL 변경
       const newUrl = `/program/counsel/edit/${consultationId}`;
@@ -206,10 +203,12 @@ export default function CounselEditPage({
                 />
                 <Select
                   id="isFinished"
+                  value={formData?.consultationStatus || "SCHEDULED"}
                   options={[
-                    { text: "상담 예정", value: "false" },
-                    { text: "상담 완료", value: "true" },
+                    { text: "상담 예정", value: "SCHEDULED" },
+                    { text: "상담 완료", value: "COMPLETED" },
                   ]}
+                  onChange={(e) => handleChange("consultationStatus", e.target.value)}
                   className="w-32"
                 />
               </div>
