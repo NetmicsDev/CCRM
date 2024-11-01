@@ -105,7 +105,7 @@ export default function CustomerRetrievePage() {
       <div className="flex justify-between mt-4 font-normal">
         <div className="flex gap-2">
           <ColorButton
-            color="grayscale-7"
+            color="gray"
             icon="delete"
             title="고객 삭제"
             onClick={deleteCheckedClient}

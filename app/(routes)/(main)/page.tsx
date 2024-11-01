@@ -218,7 +218,7 @@ export default function MainPage() {
           />
         </div>
       </div>
-      {/* 업무일지 */}
+      {/* 메모/기록 */}
       <div className="w-full mt-80 grid grid-cols-2 h-[800px]">
         <div className="pl-[20%] pr-10  flex flex-col gap-8 justify-center">
           <Image
@@ -228,7 +228,7 @@ export default function MainPage() {
             alt=""
           />
           <div>
-            <h2 className="text-4xl font-bold">업무일지 관리</h2>
+            <h2 className="text-4xl font-bold">메모/기록 관리</h2>
             <p className="text-2xl text-grayscale-6 mt-6 whitespace-pre-line font-normal leading-normal">
               생각나는 모든 것들을 글로벌 프로그램 Nortion 연동을 통해{"\n"}
               빠르고 간편하게 기록해 보세요(모바일-PC실시간 동기화)

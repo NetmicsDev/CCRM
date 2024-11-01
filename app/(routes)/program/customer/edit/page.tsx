@@ -4,14 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import PrimaryButton from "@/app/_components/Button/button";
-import ColorButton from "../_components/color-button";
 import InfoForm from "../_components/info-form";
 import FamilyForm from "./_components/family-form";
 import AccountForm from "./_components/account-form";
 import CustomerFileForm from "./_components/customer-file-form";
 import MemoForm from "./_components/memo-form";
-import HospitalHistory from "./_components/hospital-history";
-import InsuranceForm from "./_components/insurance-form";
 import CarForm from "./_components/car-form";
 import FireForm from "./_components/fire-form";
 import WaiverForm from "./_components/waiver-form";
@@ -19,7 +16,9 @@ import WaiverForm from "./_components/waiver-form";
 import { ClientDao } from "@utils/database/dao/clientDao";
 import ClientModel, { ClientDTO } from "@/app/_models/client";
 import useDialogStore from "@/app/_utils/dialog/store";
-import { downloadDatabase } from "@utils/database/getDatabase";
+import ColorButton from "../_components/color-button";
+import HospitalHistory from "./_components/hospital-history";
+import InsuranceHistory from "./_components/insurance-history";
 
 export default function CustomerEditPage() {
   const router = useRouter();
@@ -84,10 +83,11 @@ export default function CustomerEditPage() {
   return (
     <div className="w-full p-6">
       <div className="flex justify-end gap-4 font-normal">
+        <ColorButton color="sub-5" title="엑셀 다운로드" />
         <PrimaryButton
           color="secondary"
           title="저장"
-          className="w-36 text-lg"
+          className="w-32 text-base"
           onClick={handleSave}
         />
       </div>
@@ -105,15 +105,22 @@ export default function CustomerEditPage() {
           <h2 className="text-2xl font-medium">보험 및 기타정보</h2>
           <AccountForm formData={formData} setFormData={setFormData} />
           <CustomerFileForm formData={formData} setFormData={setFormData} />
-          <MemoForm formData={formData} setFormData={setFormData} />
-          {/* 
-          <h1 className="text-xl font-normal">보험정보</h1>
+
           <HospitalHistory />
-          <InsuranceForm />
-          */}
+          <InsuranceHistory />
           <CarForm formData={formData} setFormData={setFormData} />
           <FireForm formData={formData} setFormData={setFormData} />
           <WaiverForm formData={formData} setFormData={setFormData} />
+          <MemoForm formData={formData} setFormData={setFormData} />
+
+          <div className="flex justify-end gap-4 font-normal">
+            <PrimaryButton
+              color="secondary"
+              title="저장"
+              className="w-32 text-base"
+              onClick={handleSave}
+            />
+          </div>
         </div>
       </div>
     </div>
