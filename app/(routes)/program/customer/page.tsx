@@ -33,7 +33,13 @@ export default function CustomerRetrievePage() {
   }, [totalClients, searchTerm, sortOrder]);
 
   const setupDatabase = async () => {
-    const fetchedClients = await clientDao.getAllClients();
+    let fetchedClients = await clientDao.getAllClients();
+    fetchedClients = await Promise.all(
+      fetchedClients.map(async (client) => {
+        client.groupString = await client.getManagementGroupsString();
+        return client;
+      })
+    );
     setTotalClients(fetchedClients);
     setClients(fetchedClients);
   };

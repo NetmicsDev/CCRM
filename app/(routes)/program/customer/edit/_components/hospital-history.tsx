@@ -7,9 +7,23 @@ import useDialogStore from "@/app/_utils/dialog/store";
 import AddHosiptalHistoryDialog from "@/app/_components/Dialog/customer/hospital-history";
 import { TextArea } from "@/app/_components/Text";
 import Icon from "@/app/_components/Icon";
+import { ClientDTO } from "@/app/_models/client";
 
-export default function HospitalHistory() {
-  const [history, setHistory] = useState<string>("");
+export default function HospitalHistory({
+  formData, 
+  setFormData,
+}: {
+  formData: Partial<ClientDTO> | null;
+  setFormData: React.Dispatch<React.SetStateAction<Partial<ClientDTO> | null>>;
+}) {
+  const handleHospitalRecordChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      hospitalRecord: value, 
+    }));
+  };
 
   return (
     <div className="flex flex-col bg-grayscale-13 p-4 rounded-sm gap-2">
@@ -20,8 +34,8 @@ export default function HospitalHistory() {
       <textarea
         placeholder="병원 내역 메모"
         className="h-32 p-4 border border-grayscale-11 rounded-sm resize-none"
-        value={history}
-        onChange={(e) => setHistory(e.target.value)}
+        value={formData?.hospitalRecord || ""} 
+        onChange={handleHospitalRecordChange} 
       />
     </div>
   );

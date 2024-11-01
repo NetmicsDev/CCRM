@@ -28,6 +28,7 @@ export type ConsultationDTO = Partial<{
   consultationAddressDetail?: string;
   createdAt: string;
   updatedAt: string;
+  consultationStatus?: string;
 }>;
 
 export default class ConsultationModel {
@@ -43,6 +44,7 @@ export default class ConsultationModel {
   createdAt: string;
   updatedAt: string;
   client?: ClientModel;
+  consultationStatus?: string;
 
   constructor(
     id: number | undefined,
@@ -55,7 +57,8 @@ export default class ConsultationModel {
     updatedAt: string,
     detailedContent?: string,
     consultationAddress?: string,
-    consultationAddressDetail?: string
+    consultationAddressDetail?: string,
+    consultationStatus?: string
   ) {
     this.id = id;
     this.clientId = clientId;
@@ -68,6 +71,7 @@ export default class ConsultationModel {
     this.consultationAddressDetail = consultationAddressDetail;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+    this.consultationStatus = consultationStatus||"SCHEDULED";
   }
 
   isPastConsultation(): boolean {
@@ -78,11 +82,12 @@ export default class ConsultationModel {
       const timeDetail: TimeDetail = JSON.parse(this.consultationTimeDetail);
 
       let hour = timeDetail.hour;
-      if (timeDetail.timePeriod.toLowerCase() === "pm" && hour < 12) {
-        hour += 12;
-      } else if (timeDetail.timePeriod.toLowerCase() === "am" && hour === 12) {
+      if (!timeDetail.timePeriod||timeDetail.timePeriod.toLowerCase() === "am" && hour === 12) {
         hour = 0; // 자정
       }
+      else if (timeDetail.timePeriod.toLowerCase() === "pm" && hour < 12) {
+        hour += 12;
+      } 
 
       consultationDate.setHours(hour, timeDetail.minute, 0, 0);
     }
@@ -103,7 +108,8 @@ export default class ConsultationModel {
       data.updatedAt,
       data.detailedContent,
       data.consultationAddress,
-      data.consultationAddressDetail
+      data.consultationAddressDetail,
+      data.consultationStatus
     );
   }
 
@@ -120,6 +126,7 @@ export default class ConsultationModel {
       consultationAddressDetail: this.consultationAddressDetail,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      consultationStatus: this.consultationStatus,
     };
   }
 
@@ -138,6 +145,7 @@ export default class ConsultationModel {
       consultationAddressDetail: this.consultationAddressDetail,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      consultationStatus: this.consultationStatus,
     };
   }
 
@@ -153,7 +161,8 @@ export default class ConsultationModel {
       dto.updatedAt || new Date().toISOString(),
       dto.detailedContent,
       dto.consultationAddress,
-      dto.consultationAddressDetail
+      dto.consultationAddressDetail,
+      dto.consultationStatus,
     );
   }
 }

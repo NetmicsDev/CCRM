@@ -67,7 +67,12 @@ export default function InfoForm({
           value={formData?.name || ""}
           onChange={(e) => handleChange("name", e.target.value)}
         />
-        <TextField title="호칭" caution="(선택)" onChange={() => {}} />
+        <TextField 
+          title="호칭" 
+          caution="(선택)" 
+          value={formData?.honorific || ""}
+          onChange={(e) => handleChange("honorific", e.target.value)}
+        />
       </div>
 
       <div className="grid grid-cols-2">
@@ -122,10 +127,10 @@ export default function InfoForm({
       <TextField
         title="하시는 일"
         className="w-full"
+        value={formData?.occupation || ""}
         onChange={(event) => {
           const selectedValue = event.target.value;
           handleChange("occupation", selectedValue);
-          console.log(selectedValue);
         }}
         required
       />

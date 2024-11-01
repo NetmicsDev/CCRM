@@ -38,6 +38,7 @@ export default function CounselPage() {
       hour: 1,
       minute: 0,
     },
+    consultationStatus:"SCHEDULED"
   });
   // const [clients, setClients] = useState<ClientModel[]>([]);
   // const [searchTerm, setSearchTerm] = useState("");

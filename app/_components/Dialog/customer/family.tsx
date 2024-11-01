@@ -69,7 +69,6 @@ export default function AddFamilyDialog() {
         );
         return checkbox?.checked;
       });
-      console.log(selectedFamily);
 
       // 선택된 가족 데이터를 부모 컴포넌트로 전달
       closeDialog?.(selectedFamily);

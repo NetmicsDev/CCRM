@@ -70,6 +70,7 @@ export class ConsultationDao {
       consultationAddressDetail: consultationData.consultationAddressDetail,
       createdAt: consultationData.createdAt,
       updatedAt: consultationData.updatedAt,
+      consultationStatus: consultationData.consultationStatus,
     });
   }
   
@@ -93,6 +94,7 @@ export class ConsultationDao {
         consultationAddressDetail: consultationData.consultationAddressDetail,
         createdAt: consultationData.createdAt,
         updatedAt: consultationData.updatedAt,
+        consultationStatus: consultationData.consultationStatus,
       });
     });
   }
@@ -117,6 +119,7 @@ export class ConsultationDao {
         consultationAddressDetail: consultationData.consultationAddressDetail,
         createdAt: consultationData.createdAt,
         updatedAt: consultationData.updatedAt,
+        consultationStatus: consultationData.consultationStatus,
       });
     });
   }

@@ -13,4 +13,5 @@ export const consultationSchema: TableSchema = {
   consultationAddressDetail: { type: "TEXT" }, // 상세 주소
   createdAt: { type: "TEXT", notNull: true },
   updatedAt: { type: "TEXT", notNull: true },
+  consultationStatus: { type: "TEXT" }, //상담 진행 현황
 };

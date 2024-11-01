@@ -86,7 +86,7 @@ export default function CustomerTable({
                   : "-"}
               </td>
               <td className="text-sub-2 truncate">
-                {client.managementGroupId}
+                {client.groupString}
               </td>
               <td>
                 <Link
