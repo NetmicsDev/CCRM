@@ -1,3 +1,6 @@
+import { ClientManagementGroupDao } from "../_utils/database/dao/clientManagementGroupDao";
+import ManagementGroupModel from "./managementGroup";
+
 export const occupations = [
     { value: "1", text: "일1" },
     { value: "2", text: "일2" },
@@ -148,6 +151,7 @@ export type ExemptionReductionEndDate = {
 
 
 export type ClientDTO = Partial<{
+  id: number;
   name: string;
   clientType: "관리 고객" | "가망 고객";
   driverLicense: "운전 유" | "운전 무";
@@ -165,6 +169,9 @@ export type ClientDTO = Partial<{
   fireInsuranceExpiration: FireInsurance[];
   exemptionReductionEndDate: ExemptionReductionEndDate[];
   honorific: string;
+  phone: string;
+  checked: boolean;
+  groupString: string;
 }>;
 
 export default class ClientModel {
@@ -190,8 +197,8 @@ export default class ClientModel {
     honorific?: string;
     createdAt: string;
     updatedAt: string;
-    managementGroupId?: number;
     isDeleteChecked?: boolean;
+    groupString?: string;
   
     constructor(
       id: number|undefined,
@@ -216,7 +223,6 @@ export default class ClientModel {
       fireInsuranceExpiration?: string,
       exemptionReductionEndDate?: string,
       honorific?: string,
-      managementGroupId?: number,
     ) {
       this.id = id;
       this.name = name;
@@ -240,7 +246,6 @@ export default class ClientModel {
       this.fireInsuranceExpiration = fireInsuranceExpiration;
       this.exemptionReductionEndDate = exemptionReductionEndDate;
       this.honorific = honorific;
-      this.managementGroupId = managementGroupId;
     }
   
     static fromJson(client: any): ClientModel {
@@ -267,7 +272,6 @@ export default class ClientModel {
         client.fireInsuranceExpiration,
         client.exemptionReductionEndDate,
         client.honorific,
-        client.managementGroupId
       );
     }
   
@@ -296,7 +300,6 @@ export default class ClientModel {
         fireInsuranceExpiration: this.fireInsuranceExpiration,
         exemptionReductionEndDate: this.exemptionReductionEndDate,
         honorific: this.honorific,
-        managementGroupId: this.managementGroupId,
       };
     }
   
@@ -366,7 +369,6 @@ export default class ClientModel {
         JSON.stringify(dto.fireInsuranceExpiration || []),
         JSON.stringify(dto.exemptionReductionEndDate || []),
         dto.honorific || "",
-        undefined
       );
     }
     
@@ -377,6 +379,34 @@ export default class ClientModel {
           return getBirthday({ part1, part2 });
       }
       return null;
-  }
+    }
+    
+    async getManagementGroups(): Promise<ManagementGroupModel[]> {
+      if(this.id){
+          const dao = await new ClientManagementGroupDao();
+          return dao.getManagementGroupsByClientId(this.id);
+      }
+      return [];
+    }
+    
+    //그룹 리스트를 , 로 연결한 문자열
+    async getManagementGroupsString(): Promise<string> {
+      const groups = await this.getManagementGroups();
+      return groups.map(group => group.groupName).join(",");
+    }
+
+    static async getManagementGroupsFromDTO(dto: Partial<ClientDTO>): Promise<ManagementGroupModel[]> {
+      if(dto.id){
+        const dao = await new ClientManagementGroupDao();
+        return dao.getManagementGroupsByClientId(dto.id);
+      }
+      return [];
+    }
+    
+
+    static async getManagementGroupsStringFromDTO(dto: Partial<ClientDTO>): Promise<string> {
+      const groups = await ClientModel.getManagementGroupsFromDTO(dto);
+      return groups.map(group => group.groupName).join(",");
+    }
   }
   

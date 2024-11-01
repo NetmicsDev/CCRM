@@ -1,28 +1,69 @@
+"use client";
+
 import useDialogStore from "@/app/_utils/dialog/store";
 import PrimaryButton from "../../Button/button";
 import { SearchField, TextField } from "../../Text";
 import TextLabel from "../../Text/label";
 import { CheckBox } from "../../CheckBox";
-
-const mockCustomers = [
-  {
-    name: "홍길동",
-    phone: "010-8513-3549",
-    email: "2ZxwH@example.com",
-  },
-  {
-    name: "김재훈",
-    phone: "010-1111-2222",
-    email: "2ZxwH@example.com",
-  },
-  {
-    name: "구제연",
-    phone: "010-3333-4444",
-    email: "2ZxwH@example.com",
-  },
-];
+import { useEffect, useState } from "react";
+import ClientModel, { ClientDTO } from "@/app/_models/client";
+import { ClientDao } from "@/app/_utils/database/dao/clientDao";
 
 export default function GroupMemberDialog() {
+  const [allClientData, setAllClientData] = useState<ClientDTO[] | null>(null); 
+  const [clientData, setClientData] = useState<ClientDTO[] | null>(null); 
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  useEffect(() => {
+    if (!allClientData){
+      const clientDao = new ClientDao(); 
+
+      const fetchData = async () => {
+        try {
+          const clientDatas = await clientDao.getAllClients();
+          const allClientData = await Promise.all(
+            clientDatas.map(async (client) => ({
+              id: client.id!, 
+              name: client.name!, 
+              phone: client.contactNumber!, 
+              checked:false,
+              groupString: await client.getManagementGroupsString()
+            }))
+          );
+          setAllClientData(allClientData);
+          setClientData(allClientData);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [allClientData, ]);
+
+  const handleSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm); 
+    if (allClientData) {
+      const filteredData = allClientData.filter((client) =>
+        client.name?.includes(searchTerm) || client.phone?.includes(searchTerm)
+      );
+      setClientData(filteredData); 
+    }
+  };
+  
+  const addGroupMember = () => {
+    const selectedClientData = (clientData || []).filter(client => client.checked);
+    closeDialog(selectedClientData);
+  };
+
+  const handleCheckboxChange = (id: number) => {
+    setClientData((prevClientData) =>
+      (prevClientData || []).map((client) =>
+        client.id === id ? { ...client, checked: !client.checked } : client
+      )
+    );
+  };
+
   const closeDialog = useDialogStore((state) => state.closeDialog);
 
   return (
@@ -31,7 +72,7 @@ export default function GroupMemberDialog() {
         <h2 className="text-xl font-normal">그룹 고객 추가</h2>
       </div>
       <div className="px-6">
-        <SearchField placeholder="고객명을 검색하세요" onSearch={() => {}} />
+        <SearchField placeholder="고객명을 검색하세요" onSearch={handleSearch} />
       </div>
       <div className="px-6">
         <table className="w-full ">
@@ -52,14 +93,18 @@ export default function GroupMemberDialog() {
             </tr>
           </thead>
           <tbody className="block max-h-64 overflow-y-scroll">
-            {mockCustomers.map((customer) => (
+            {(clientData||[]).map((customer) => (
               <tr key={customer.name} className="table w-full table-fixed">
                 <td className="p-2 w-12">
-                  <CheckBox name={customer.name} />
+                  <CheckBox 
+                    name={customer?.id?.toString()||""} 
+                    checked={customer.checked} 
+                    onChecked={() => handleCheckboxChange(customer.id!)}
+                  />
                 </td>
-                <td className="">{customer.name}</td>
-                <td className="">{customer.phone}</td>
-                <td className=""></td>
+                <td className="">{customer?.name||""}</td>
+                <td className="">{customer?.phone||""}</td>
+                <td className="">{customer?.groupString||""}</td>
               </tr>
             ))}
           </tbody>
@@ -70,13 +115,13 @@ export default function GroupMemberDialog() {
           title="취소"
           color="gray"
           className="w-20 h-10 rounded text-base"
-          onClick={closeDialog}
+          onClick={() => closeDialog(null)}
         />
         <PrimaryButton
           title="추가"
           color="primary"
           className="w-20 h-10 rounded text-base"
-          onClick={() => closeDialog()}
+          onClick={() => addGroupMember()}
         />
       </div>
     </div>

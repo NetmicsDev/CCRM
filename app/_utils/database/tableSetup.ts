@@ -1,24 +1,27 @@
 import { Database } from "sql.js";
 import { createTables } from "./generator/tableGenerator";
-import { metadataSchema } from "./schema/metadataSchema";
 import { clientSchema } from "./schema/clientSchema";
 import { consultationSchema } from "./schema/consultationSchema";
 import { managementGroupSchema } from "./schema/managementGroupSchema";
 import { memoSchema } from "./schema/memoSchema";
+import { sqliteMetadataSchema } from "./schema/sqliteMetadataSchema";
+import { clientManagementGroupSchema } from "./schema/clientManagementGroupSchema";
 
 export async function setupTables(db: Database): Promise<void> {
   const tables = {
-    metadata: metadataSchema,
+    metadata: sqliteMetadataSchema,
     client: clientSchema,
     consultation: consultationSchema,
     management_group: managementGroupSchema,
     memo: memoSchema,
+    client_management_group:clientManagementGroupSchema
   };
 
   await createTables(db, tables);
 
-  // 예시 데이터가 있는지 확인
-  const result = db.exec("SELECT COUNT(*) as count FROM client");
+
+  const version = process.env.NEXT_PUBLIC_SQLITE_VERSION || "1";
+  const result = db.exec("SELECT COUNT(*) as count FROM metadata WHERE metaKey = 'version'");
   const count = result[0]?.values[0][0] as number;
 
   if (count === 0) {
@@ -41,7 +44,13 @@ export async function setupTables(db: Database): Promise<void> {
       (3, '세금 절감 상담', 4, '절세 가능한 항목에 대해 설명하고 최적의 절세 전략 제안', '2024-11-15', '대전 서구', '대전로 101', '${new Date().toISOString()}', '${new Date().toISOString()}');
     `);
 
+    db.run(`
+      INSERT INTO metadata (metaKey, metaValue, createdAt, updatedAt)
+      VALUES ('version', '${version}', '${new Date().toISOString()}', '${new Date().toISOString()}');
+    `);
+
     console.log("Inserted example data into clients table.");
+
   }
   
 }

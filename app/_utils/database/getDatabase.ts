@@ -7,6 +7,7 @@ import {
   uploadDatabaseToDrive,
 } from "@/app/_services/google/customer";
 import useDialogStore from "@/app/_utils/dialog/store";
+import { SqliteMetadataDao } from "./dao/sqliteMetadataDao";
 
 declare global {
   interface Window {
@@ -32,6 +33,8 @@ export async function getDatabase(): Promise<Database> {
 
   openLoading("데이터 베이스를 불러오는 중입니다...");
 
+  
+
   // db를 드라이브에서 가져온다.  
   const {data, error} = await loadDatabaseFromDrive()
 
@@ -54,6 +57,19 @@ export async function getDatabase(): Promise<Database> {
     const buffer = data!.data;
     window.sqliteDB = await loadDatabaseFromFile(buffer);
     window.sqliteDBId=data?.id;
+
+    // 버전 메타데이터 확인
+    const versionMetadata :string|undefined = await getDatabaseVersion(window.sqliteDB);
+    // 버전이 없거나 특정 값보다 낮은 경우 처리 - 임시로 db 재생성으로만 처리
+    if (!versionMetadata || parseInt(versionMetadata, 10) < parseInt(process.env.NEXT_PUBLIC_SQLITE_VERSION||"1",10)) {
+      window.dbInitPromise = initializeDatabase();
+      window.sqliteDB = await window.dbInitPromise;
+      uploadDatabaseInner(window.sqliteDB);
+      window.dbInitPromise = undefined;
+      closeDialog();
+      return window.sqliteDB;
+    }
+
     window.dbInitPromise = undefined;
     closeDialog();
     return window.sqliteDB;
@@ -80,7 +96,6 @@ async function initializeDatabase(): Promise<Database> {
 
 //내부 DB를 드라이브로 업로드
 export async function uploadDatabaseInner(db:Database): Promise<void> {
-
   //관리하는 sqliteDBId가 있을경우 업데이트
   console.log(window.sqliteDBId);
   if(window.sqliteDBId){
@@ -156,4 +171,16 @@ export async function loadDatabaseFromFile(data: Uint8Array): Promise<Database> 
   console.log("Database loaded from file and stored globally.");
 
   return db;
+}
+
+//버전 체크
+async function getDatabaseVersion(db:Database) : Promise<string|undefined>{
+  try{
+    const metadataDao = new SqliteMetadataDao();
+    const versionMetadata = await metadataDao.getMetadataByKey(db,"version");
+    return versionMetadata?.metaValue;
+  }
+  catch(e){
+    return undefined;
+  }
 }

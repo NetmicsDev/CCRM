@@ -61,17 +61,23 @@ export class ClientDao {
   async deleteClientsTransaction(ids: number[]): Promise<void> {
     if (ids.length === 0) return;
     const db = await getDatabase();
-    
     const idList = ids.join(", ");
-    //해당 유저의 상담 목록도 지움
+    
+    // 트랜잭션 시작
     await db.exec('BEGIN TRANSACTION');
-    await db.run(generateDeleteQuery("client", `id IN (${idList})`));
-    await db.run(generateDeleteQuery("consultation", `clientId IN (${idList})`));
-    await db.exec('COMMIT');
-  }
-
+    try {
+      // 해당 유저와 관련된 모든 데이터를 삭제
+      await db.run(generateDeleteQuery("client", `id IN (${idList})`));
+      await db.run(generateDeleteQuery("consultation", `clientId IN (${idList})`));
+      await db.run(generateDeleteQuery("client_management_group", `clientId IN (${idList})`));
   
-
+      await db.exec('COMMIT');
+    } catch (error) {
+      await db.exec('ROLLBACK');
+      throw error;
+    }
+  }
+  
   async getClient(id: number): Promise<ClientModel | null> {
     const db = await getDatabase();
     const query = generateSelectQuery("client", `id = ${id}`);
@@ -106,7 +112,6 @@ export class ClientDao {
       honorific: clientData.honorific,
       createdAt: clientData.createdAt,
       updatedAt: clientData.updatedAt,
-      managementGroupId: clientData.managementGroupId,
     });
   }
 
@@ -140,36 +145,9 @@ export class ClientDao {
         honorific: clientData.honorific,
         createdAt: clientData.createdAt,
         updatedAt: clientData.updatedAt,
-        managementGroupId: clientData.managementGroupId,
       });
     });
   }
   
-
-  async getClientWithManagementGroup(id: number): Promise<ClientModel | null> {
-    const db = await getDatabase();
-    const clientQuery = generateSelectQuery("client", `id = ${id}`);
-    const clientResult = db.exec(clientQuery);
-    const clientData = clientResult[0]?.values[0];
-
-    if (!clientData) {
-      return null;
-    }
-
-    const clientModel = ClientModel.fromJson(clientData);
-    const managementGroupId = clientData[22];
-    if (managementGroupId) {
-      const managementGroupQuery = generateSelectQuery("management_group", `id = ${managementGroupId}`);
-      const managementGroupResult = db.exec(managementGroupQuery);
-      const managementGroupData = managementGroupResult[0]?.values[0];
-      return null;
-      // return {
-      //   ...clientModel,
-      //   managementGroupId: managementGroupData,
-      // };
-    }
-
-    return clientModel;
-  }
 }
 
