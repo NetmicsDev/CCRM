@@ -1,10 +1,12 @@
 import { Button, LinkButton } from "@components/Button";
 import Image from "next/image";
 import Link from "next/link";
+import FloatingBar from "./_components/floating-bar";
 
 export default function MainPage() {
   return (
     <div className="flex min-h-screen flex-col">
+      <FloatingBar />
       <div className="w-full aspect-[192/160] bg-[url('/images/main/main-visual.svg')] bg-no-repeat bg-bottom bg-cover">
         <div className="flex flex-col mt-20 gap-14 items-center ">
           <h1 className="text-6xl font-bold whitespace-pre-line leading-normal text-center">
