@@ -25,11 +25,9 @@ export default function CustomerTable({
         </colgroup>
 
         <thead>
-          <tr className="bg-grayscale-13 border-b border-grayscale-11">
-            <th className="py-2">
-              <input type="checkbox" name="all_select" id="all_select" />
-            </th>
-            <th className="text-left font-normal">고객명</th>
+          <tr className="bg-grayscale-13 border-y border-grayscale-11">
+            <th className=""></th>
+            <th className="py-2 text-left font-normal">고객명</th>
             <th className="text-left font-normal">구분</th>
             <th className="text-left font-normal">연락처</th>
             <th className="text-left font-normal">상령일</th>
@@ -85,9 +83,7 @@ export default function CustomerTable({
                     })
                   : "-"}
               </td>
-              <td className="text-sub-2 truncate">
-                {client.groupString}
-              </td>
+              <td className="text-sub-2 truncate">{client.groupString}</td>
               <td>
                 <Link
                   href={`/program/customer/edit?id=${client.id}`}

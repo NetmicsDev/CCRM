@@ -85,10 +85,8 @@ export default function AddFamilyDialog() {
       <table className="w-full">
         <thead>
           <tr className="table w-full table-fixed bg-grayscale-13 border-b border-grayscale-11">
-            <th className="text-left w-12 p-4">
-              <input type="checkbox" name="all_select" id="all_select" />
-            </th>
-            <th className="text-left font-normal">고객명</th>
+            <th className="text-left w-12 p-4"></th>
+            <th className="py-2 text-left font-normal">고객명</th>
             <th className="text-left font-normal">연락처</th>
             <th className="text-left font-normal">관계</th>
           </tr>

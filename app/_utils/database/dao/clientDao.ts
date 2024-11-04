@@ -11,13 +11,20 @@ import ClientModel from "@/app/_models/client";
 
 export class ClientDao {
   @updateDatabase
-  async insertClient(client: ClientModel): Promise<void> {
+  async insertClient(client: ClientModel): Promise<number> {
     const db = await getDatabase();
     const clientData = client.toJson();
     clientData.createdAt = new Date().toISOString();
     clientData.updatedAt = new Date().toISOString();
     const query = generateInsertQuery("client", clientData);
     db.run(query);
+
+    // 삽입된 마지막 row의 ID 가져오기
+    const result = db.exec("SELECT last_insert_rowid() AS id");
+
+    // 결과에서 id 추출
+    const lastId = result[0]?.values[0][0] as number;
+    return lastId;
   }
 
   @updateDatabase
@@ -46,11 +53,10 @@ export class ClientDao {
     db.run(query);
   }
 
-
   @updateDatabase
   async deleteClients(ids: number[]): Promise<void> {
     if (ids.length === 0) return;
-  
+
     const db = await getDatabase();
     const idList = ids.join(", ");
     const query = generateDeleteQuery("client", `id IN (${idList})`);
@@ -62,22 +68,29 @@ export class ClientDao {
     if (ids.length === 0) return;
     const db = await getDatabase();
     const idList = ids.join(", ");
-    
+
     // 트랜잭션 시작
-    await db.exec('BEGIN TRANSACTION');
+    await db.exec("BEGIN TRANSACTION");
     try {
       // 해당 유저와 관련된 모든 데이터를 삭제
       await db.run(generateDeleteQuery("client", `id IN (${idList})`));
-      await db.run(generateDeleteQuery("consultation", `clientId IN (${idList})`));
-      await db.run(generateDeleteQuery("client_management_group", `clientId IN (${idList})`));
-  
-      await db.exec('COMMIT');
+      await db.run(
+        generateDeleteQuery("consultation", `clientId IN (${idList})`)
+      );
+      await db.run(
+        generateDeleteQuery(
+          "client_management_group",
+          `clientId IN (${idList})`
+        )
+      );
+
+      await db.exec("COMMIT");
     } catch (error) {
-      await db.exec('ROLLBACK');
+      await db.exec("ROLLBACK");
       throw error;
     }
   }
-  
+
   async getClient(id: number): Promise<ClientModel | null> {
     const db = await getDatabase();
     const query = generateSelectQuery("client", `id = ${id}`);
@@ -123,7 +136,7 @@ export class ClientDao {
 
     const clients = mapResultsToKeyValue(result); // Key-value로 변환
 
-    return clients.map(clientData => {
+    return clients.map((clientData) => {
       return ClientModel.fromJson({
         id: clientData.id,
         name: clientData.name,
@@ -150,6 +163,4 @@ export class ClientDao {
       });
     });
   }
-  
 }
-

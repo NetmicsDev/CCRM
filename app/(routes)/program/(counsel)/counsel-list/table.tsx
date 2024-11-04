@@ -29,10 +29,8 @@ export default function CounselTable({
         </colgroup>
         <thead>
           <tr className="bg-grayscale-12 border-b border-grayscale-11">
-            <td className="px-4 py-2">
-              <input type="checkbox" />
-            </td>
-            <td className="font-medium">고객명</td>
+            <td className="px-4 py-2"></td>
+            <td className="py-2 font-medium">고객명</td>
             <td>
               <div
                 className="inline-flex items-center gap-2 rounded hover:bg-grayscale-11 px-2 py-1"
@@ -70,7 +68,7 @@ export default function CounselTable({
                 </p>
               </td>
               <td className="py-3">
-                {consultation.consultationStatus==="COMPLETED"? ( // 상담 완료 여부 판단
+                {consultation.consultationStatus === "COMPLETED" ? ( // 상담 완료 여부 판단
                   <div className="inline-flex px-2 py-1 rounded bg-grayscale-12 text-grayscale-6 text-sm font-medium">
                     상담 완료
                   </div>

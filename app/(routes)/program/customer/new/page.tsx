@@ -59,7 +59,7 @@ export default function NewCustomerPage() {
     }
 
     // TODO: DB에 추가하고 ID를 반환하게 해서 해당 edit page로 이동해야 함.
-    await clientDao.insertClient(
+    const newId = await clientDao.insertClient(
       ClientModel.fromDTO({
         ...formData,
         anniversary,
@@ -71,7 +71,7 @@ export default function NewCustomerPage() {
       description: "고객 정보 관리 화면으로 이동합니다",
     });
 
-    router.replace("/program/customer");
+    router.replace("/program/customer?id=" + newId);
   };
 
   return (
