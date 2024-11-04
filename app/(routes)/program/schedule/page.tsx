@@ -5,6 +5,7 @@ import CalendarView from "./_components/calendar-view";
 import { getCalendarEvents } from "@/app/_services/google/calendar";
 import useDialogStore from "@/app/_utils/dialog/store";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
+import { ClientDao } from "@/app/_utils/database/dao/clientDao";
 
 export default function ScheduleListPage() {
   const { openAlert, openLoading, closeDialog } = useDialogStore();
@@ -12,6 +13,7 @@ export default function ScheduleListPage() {
 
   useEffect(() => {
     async function fetchEvents() {
+      await new ClientDao().getClient(1);
       openLoading("구글 캘린더 연동중...");
       const { data, error } = await getCalendarEvents();
       closeDialog();
@@ -22,10 +24,11 @@ export default function ScheduleListPage() {
         });
         return;
       }
+      if (data?.length === 0) return;
       loadSchedules(data!);
     }
     fetchEvents();
-  }, [loadSchedules]);
+  }, []);
 
   return (
     <div className="flex flex-col max-w-screen-lg w-full mx-auto gap-5 my-10">
