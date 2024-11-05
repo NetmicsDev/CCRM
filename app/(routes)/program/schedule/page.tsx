@@ -6,12 +6,15 @@ import { getCalendarEvents } from "@/app/_services/google/calendar";
 import useDialogStore from "@/app/_utils/dialog/store";
 import { useScheduleStore } from "@/app/_utils/schedule/store";
 import { ClientDao } from "@/app/_utils/database/dao/clientDao";
+import useAuthStore from "@/app/_utils/auth/store";
 
 export default function ScheduleListPage() {
   const { openAlert, openLoading, closeDialog } = useDialogStore();
   const loadSchedules = useScheduleStore((state) => state.loadSchedules);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     async function fetchEvents() {
       await new ClientDao().getClient(1);
       openLoading("구글 캘린더 연동중...");
@@ -28,7 +31,8 @@ export default function ScheduleListPage() {
       loadSchedules(data!);
     }
     fetchEvents();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   return (
     <div className="flex flex-col max-w-screen-lg w-full mx-auto gap-5 my-10">

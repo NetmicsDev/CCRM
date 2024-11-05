@@ -10,8 +10,10 @@ import ClientModel from "@/app/_models/client";
 import { ClientDao } from "@/app/_utils/database/dao/clientDao";
 import Pagination from "@/app/_components/Pagination";
 import { useSearchParams } from "next/navigation";
+import useAuthStore from "@/app/_utils/auth/store";
 
 export default function CounselListPage() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const searchParams = useSearchParams();
 
   const [totalConsultations, setTotalConsultations] = useState<
@@ -37,13 +39,22 @@ export default function CounselListPage() {
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     filterConsultations();
     if (!isExecuted.current) {
       isExecuted.current = true;
       setupDatabase().catch(console.error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalConsultations, searchTerm, sortOrder, countPerPage, pageNum,statusFilter]);
+  }, [
+    isAuthenticated,
+    totalConsultations,
+    searchTerm,
+    sortOrder,
+    countPerPage,
+    pageNum,
+    statusFilter,
+  ]);
 
   const setupDatabase = async () => {
     const fetchedClients = await clientDao.getAllClients();
@@ -67,16 +78,14 @@ export default function CounselListPage() {
         consultation.client?.name.includes(searchTerm) // 고객명
     );
     //상태 필터링
-    console.log(statusFilter)
-    if(statusFilter!=="ALL"){
+    console.log(statusFilter);
+    if (statusFilter !== "ALL") {
       filteredConsultations = filteredConsultations.filter(
-        (consultation) =>
-          consultation.consultationStatus===statusFilter // 고객명
+        (consultation) => consultation.consultationStatus === statusFilter // 고객명
       );
     }
 
     setFilteredConsultations(filteredConsultations);
-    
 
     //정렬 - 상담 일자 기준
     const sortedConsultations = [...filteredConsultations].sort((a, b) => {
@@ -101,9 +110,8 @@ export default function CounselListPage() {
     const monthString = `${currentYear}-${String(month).padStart(2, "0")}`;
 
     //상담 현황은 완료된 상담만 수집
-    const completedConsultations= totalConsultations.filter(
-      (consultation) =>
-        consultation.consultationStatus==="COMPLETED" // 고객명
+    const completedConsultations = totalConsultations.filter(
+      (consultation) => consultation.consultationStatus === "COMPLETED" // 고객명
     );
 
     const count = completedConsultations.filter((consultation) =>

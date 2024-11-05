@@ -20,18 +20,21 @@ import {
 } from "@/app/_constants/gdrive";
 import cn from "@/app/_utils/cn";
 import useDialogStore from "@/app/_utils/dialog/store";
+import useAuthStore from "@/app/_utils/auth/store";
 
 export default function ArchivePage() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { directory, loadDirectory, addFile } = useGoogleDriveStore();
   const { openLoading, closeDialog } = useDialogStore();
 
   useEffect(() => {
-    if (directory) return;
+    if (!isAuthenticated || directory) return;
     const fetchDriveFiles = async () => {
       openLoading("드라이브 자료들을 가져오는 중입니다...");
       const { data: folderData, error: folderError } = await loadMainDrive();
       if (folderError || !folderData) {
         console.error(folderError);
+        closeDialog();
         return;
       }
       const { data, error } = await getDriveFiles(folderData.id);
@@ -44,7 +47,8 @@ export default function ArchivePage() {
       loadDirectory(folderData);
     };
     fetchDriveFiles();
-  }, [directory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, directory]);
 
   const handleFolderAdd = async () => {
     const folderName = window.prompt("폴더 이름을 입력하세요");

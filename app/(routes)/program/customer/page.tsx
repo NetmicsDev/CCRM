@@ -11,6 +11,7 @@ import { ClientDao } from "@/app/_utils/database/dao/clientDao";
 import CustomerTable from "./table";
 import ClientModel from "@/app/_models/client";
 import { Select } from "@/app/_components/Select";
+import useAuthStore from "@/app/_utils/auth/store";
 
 export default function CustomerRetrievePage() {
   const router = useRouter();
@@ -21,16 +22,21 @@ export default function CustomerRetrievePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
 
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   const clientDao = new ClientDao();
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
     setFilterClients();
     if (!isExecuted.current) {
       isExecuted.current = true;
       setupDatabase().catch(console.error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalClients, searchTerm, sortOrder]);
+  }, [isAuthenticated, totalClients, searchTerm, sortOrder]);
 
   const setupDatabase = async () => {
     let fetchedClients = await clientDao.getAllClients();

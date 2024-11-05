@@ -36,11 +36,11 @@ export default function ProgramNav() {
           subList={[
             {
               title: "상담 등록",
-              href: "/program/counsel",
+              href: "/program/counsel/new",
             },
             {
               title: "상담 현황",
-              href: "/program/counsel-list",
+              href: "/program/counsel/list",
             },
           ]}
         />

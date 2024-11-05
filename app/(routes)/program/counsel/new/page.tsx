@@ -13,8 +13,7 @@ import PrimaryButton from "@/app/_components/Button/button";
 import { useRouter } from "next/navigation";
 import useDialogStore from "@/app/_utils/dialog/store";
 import { Address, useDaumPostcodePopup } from "react-daum-postcode";
-import { useEffect, useRef, useState } from "react";
-import { ClientDao } from "@/app/_utils/database/dao/clientDao";
+import { useState } from "react";
 import { ConsultationDao } from "@/app/_utils/database/dao/consultationDao";
 import ConsultationModel, {
   consultationContents,
@@ -38,7 +37,7 @@ export default function CounselPage() {
       hour: 1,
       minute: 0,
     },
-    consultationStatus:"SCHEDULED"
+    consultationStatus: "SCHEDULED",
   });
   // const [clients, setClients] = useState<ClientModel[]>([]);
   // const [searchTerm, setSearchTerm] = useState("");
@@ -92,7 +91,7 @@ export default function CounselPage() {
       title: "상담 등록 완료",
       description: "상담 현황 페이지로 이동합니다",
     });
-    router.push("/program/counsel-list");
+    router.push("/program/counsel/list");
   };
 
   const handleChange = (field: string, value: any) => {
@@ -247,7 +246,7 @@ export default function CounselPage() {
               value={formData.detailedContent || ""}
               onChange={(e) => handleChange("detailedContent", e.target.value)}
             />
-            <div className="flex gap-4">
+            {/* <div className="flex gap-4">
               <ColorButton
                 color="sub-2"
                 icon="aiVerbal"
@@ -255,7 +254,7 @@ export default function CounselPage() {
               />
               <ColorButton color="sub-2" icon="aiFile" title="텍스트 변환" />
               <ColorButton color="sub-2" icon="ai" title="AI 요약" />
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="flex flex-col gap-4 w-1/2">

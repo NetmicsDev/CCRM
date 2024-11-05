@@ -14,7 +14,7 @@ export default function MainPage() {
             업무 효율 극대화
           </h1>
           <LinkButton
-            href="/sign-in"
+            href="/program"
             title="CCRM 체험하기"
             color="primary"
             className="rounded-full flex-shrink-0 w-44 font-semibold bg-main-2 text-lg"

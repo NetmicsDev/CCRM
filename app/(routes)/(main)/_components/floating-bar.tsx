@@ -69,7 +69,7 @@ const FloatingBar: React.FC = () => {
         <span className="text-[0.7rem]">고객등록</span>
       </Link>
       <Link
-        href="/program/counsel-list"
+        href="/program/counsel/list"
         className="flex flex-col items-center w-14 h-14 py-2 bg-grayscale-14 rounded-full shadow-lg shadow-grayscale-10"
       >
         <Icon type="mobile" className="w-6 h-6 fill-[#0F62FE]" />

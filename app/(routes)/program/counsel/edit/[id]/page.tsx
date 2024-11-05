@@ -114,7 +114,7 @@ export default function CounselEditPage({
         description: "상담 현황 페이지로 이동합니다",
       });
     }
-    router.push("/program/counsel-list");
+    router.push("/program/counsel/list");
   };
 
   const handleChange = (field: string, value: any) => {
@@ -208,7 +208,9 @@ export default function CounselEditPage({
                     { text: "상담 예정", value: "SCHEDULED" },
                     { text: "상담 완료", value: "COMPLETED" },
                   ]}
-                  onChange={(e) => handleChange("consultationStatus", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("consultationStatus", e.target.value)
+                  }
                   className="w-32"
                 />
               </div>

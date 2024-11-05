@@ -33,6 +33,7 @@ export default function Profile() {
   }, [user]);
 
   const handleSignout = async () => {
+    if (!user) return;
     const result = await openConfirm({
       title: "로그아웃",
       description: "정말 로그아웃 하시겠습니까?",
@@ -56,7 +57,9 @@ export default function Profile() {
           height={56}
           alt=""
         />
-        <span className="ml-3 text-lg font-normal">{user?.name ?? "-"} 님</span>
+        <span className="ml-3 text-lg font-normal">
+          {user?.name ?? "홍길동"} 님
+        </span>
       </div>
       <div className="w-full px-6">
         <div className="px-4 py-2 bg-grayscale-13 shadow-md rounded-lg text-main-1">
