@@ -21,7 +21,7 @@ export default function MainNav() {
               <Link href={"/"} className="mr-20">
                 <Icon type="logo" className="w-[80px] h-[25px]" />
               </Link>
-              {width > 1024 && (
+              {width >= 1024 && (
                 <>
                   <MainNavItem href="/my-page/shop" plain={true}>
                     제품 구매하기
@@ -31,7 +31,7 @@ export default function MainNav() {
               )}
             </div>
             <div className="flex h-full gap-4 items-center">
-              {width > 1024 ? (
+              {width >= 1024 ? (
                 <>
                   <MainNavItem href="/my-page">마이페이지</MainNavItem>
                   <AuthButton />
